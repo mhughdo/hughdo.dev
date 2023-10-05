@@ -1,3 +1,22 @@
 {
-  "extends": "next/core-web-vitals"
+  "root": true,
+  "extends": ["next/core-web-vitals", "prettier"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "trailingComma": "es5",
+        "singleQuote": true,
+        "printWidth": 120,
+        "tabWidth": 2,
+        "jsxSingleQuote": true,
+        "semi": false,
+        "eslintIntegration": true,
+        "jsxBracketSameLine": true,
+        "bracketSpacing": true,
+        "proseWrap": "always"
+      }
+    ]
+  },
+  "plugins": ["prettier"]
 }
