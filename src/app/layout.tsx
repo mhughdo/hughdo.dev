@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const theme = savedTheme?.value || 'light'
 
   return (
-    <html lang='en'>
+    <html lang='en' className={theme}>
       <body>{children}</body>
       <Analytics />
     </html>
