@@ -10,7 +10,11 @@ module.exports = {
   ],
   darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        mono: ['var(--font-fira-code)', 'var(--font-roboto-mono)'],
+      },
+    },
   },
   plugins: [],
 }
