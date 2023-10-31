@@ -1,6 +1,7 @@
-import { type Config } from 'tailwindcss'
-import { fontFamily } from 'tailwindcss/defaultTheme'
 import colors from 'tailwindcss/colors'
+import { fontFamily } from 'tailwindcss/defaultTheme'
+
+import { type Config } from 'tailwindcss'
 
 export default {
   content: [
@@ -45,7 +46,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        mono: ['var(--font-fira-code)', 'var(--font-roboto-mono)', ...fontFamily.mono],
+        mono: ['var(--font-geist-mono)', ...fontFamily.mono],
       },
       typography: (theme: any) => {
         // some fontSizes return [size, props], others just size :/
