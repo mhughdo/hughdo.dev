@@ -1,4 +1,3 @@
-import colors from 'tailwindcss/colors'
 import { fontFamily } from 'tailwindcss/defaultTheme'
 
 import { type Config } from 'tailwindcss'
@@ -19,6 +18,7 @@ export default {
       current: 'currentColor',
       white: 'var(--color-white)',
       black: 'var(--color-black)',
+      'geist-text-gradient': 'rgba(0,0,0,.8)',
       gray: {
         100: 'var(--color-gray-100)',
         200: 'var(--color-gray-200)',
@@ -30,23 +30,47 @@ export default {
         800: 'var(--color-gray-800)',
         900: 'var(--color-gray-900)',
       },
-      slate: {
-        500: 'var(--color-slate-500)',
-      },
-      red: colors.red,
-      yellow: colors.yellow,
-      green: colors.green,
-      blue: colors.blue,
-      indigo: colors.indigo,
-      sky: colors.sky,
-      cyan: colors.cyan,
-      teal: colors.teal,
-      emerald: colors.emerald,
-      amber: colors.amber,
     },
     extend: {
       fontFamily: {
         mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+      },
+      colors: {
+        slate: {
+          500: 'var(--color-slate-500)',
+        },
+        blue: {
+          600: 'oklch(var(--hey-start-gradient))',
+        },
+        teal: {
+          600: 'oklch(var(--hey-end-gradient))',
+        },
+        violet: {
+          700: 'oklch(var(--im-start-gradient))',
+        },
+        pink: {
+          600: 'oklch(var(--im-end-gradient))',
+        },
+        rose: {
+          600: 'oklch(var(--hughdo-start-gradient))',
+        },
+        yellow: {
+          500: 'oklch(var(--hughdo-end-gradient))',
+        },
+      },
+      keyframes: {
+        'animated-gradient-hey-text-fade-foreground': {
+          '0%, 16.667%, 100%': { opacity: '1' },
+          '33.333%, 83.333%': { opacity: '0' },
+        },
+        'animated-gradient-hey-text-fade-background': {
+          '0%, 16.667%, 100%': { opacity: '0' },
+          '25%, 91.667%': { opacity: '1' },
+        },
+      },
+      animation: {
+        'hey-text-foreground': 'animated-gradient-hey-text-fade-foreground 8s infinite',
+        'hey-text-background': 'animated-gradient-hey-text-fade-background 8s infinite',
       },
       typography: (theme: any) => {
         // some fontSizes return [size, props], others just size :/

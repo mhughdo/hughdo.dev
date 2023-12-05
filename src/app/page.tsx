@@ -1,3 +1,9 @@
+import ShortIntro from '@/components/HeroIntro'
+
 export default function Home() {
-  return <main className='font-mono font-normal'>Home</main>
+  return (
+    <div className='wrapper'>
+      <ShortIntro />
+    </div>
+  )
 }

@@ -2,6 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --color-black: #000;
+    --color-white: #fff;
+    --color-slate-500: #a9adc1;
+    --color-gray-100: #f7f7f7;
+    --color-gray-200: #e6e9ee;
+    --color-gray-300: #dde0e4;
+    --color-gray-400: #818890;
+    --color-gray-500: #535661;
+    --color-gray-600: #4b4c53;
+    --color-gray-700: #3a3d4a;
+    --color-gray-800: #2e3039;
+    --color-gray-900: #1f2028;
+    --hey-start-gradient: 59.59% 0.24 255.09156059071347;
+    --hey-end-gradient: 81.58% 0.189 190.74037768509325;
+    --im-start-gradient: 49.07% 0.272 300.45;
+    --im-end-gradient: 64.53% 0.292 2.47;
+    --hughdo-start-gradient: 67.3% 0.266 25.039656026515278;
+    --hughdo-end-gradient: 85.82% 0.201 91.19;
+  }
+}
+
 @layer utilities {
   .bg-primary {
     @apply bg-white dark:bg-gray-900;
@@ -25,6 +48,15 @@
 
   .text-inverse {
     @apply text-white dark:text-black;
+  }
+  .text-fill-color {
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@layer components {
+  .wrapper {
+    @apply mx-auto w-full max-w-7xl px-12;
   }
 }
 
@@ -99,21 +131,6 @@ h5,
 h6 {
   overflow-wrap: break-word;
   hyphens: auto;
-}
-
-:root {
-  --color-black: #000;
-  --color-white: #fff;
-  --color-slate-500: #a9adc1;
-  --color-gray-100: #f7f7f7;
-  --color-gray-200: #e6e9ee;
-  --color-gray-300: #dde0e4;
-  --color-gray-400: #818890;
-  --color-gray-500: #535661;
-  --color-gray-600: #4b4c53;
-  --color-gray-700: #3a3d4a;
-  --color-gray-800: #2e3039;
-  --color-gray-900: #1f2028;
 }
 
 #root,

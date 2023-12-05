@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/react'
 import clsx from 'clsx'
-import { GeistMono } from 'geist/font'
+import { GeistMono } from 'geist/font/mono'
 import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
@@ -44,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, GeistMono.variable)}>
-      <body className='bg-white font-mono transition duration-500 dark:bg-gray-900'>
+      <body className='bg-white font-mono antialiased transition duration-500 dark:bg-gray-900'>
         <Header initialTheme={theme} />
         {children}
       </body>

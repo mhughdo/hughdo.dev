@@ -15,7 +15,7 @@
     "framer-motion": "^10.16.4",
     "geist": "^1.1.0",
     "js-cookie": "^3.0.5",
-    "next": "14.0.1",
+    "next": "14.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -26,7 +26,7 @@
     "@types/react-dom": "^18.2.15",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.53.0",
-    "eslint-config-next": "14.0.1",
+    "eslint-config-next": "14.0.2",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-simple-import-sort": "^10.0.0",
