@@ -34,8 +34,9 @@ import './globals.css'
 // }
 // )
 
-export const meta: Metadata = {
+export const metadata: Metadata = {
   title: 'Hugh Do',
+  description: 'Focus on creating interactive and user-friendly blogs about React, Next.js, Kubernetes, AWS, and more.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
