@@ -67,10 +67,32 @@ export default {
           '0%, 16.667%, 100%': { opacity: '0' },
           '25%, 91.667%': { opacity: '1' },
         },
+        'animated-gradient-im-text-fade-foreground': {
+          '0%, 100%': { opacity: '0' },
+          '33.333%, 50%': { opacity: '1' },
+          '16.667%, 66.667%': { opacity: '0' },
+        },
+        'animated-gradient-im-text-fade-background': {
+          '0%, 100%': { opacity: '1' },
+          '33.333%, 50%': { opacity: '0' },
+          '25%, 58.333%': { opacity: '1' },
+        },
+        'animated-gradient-hughdo-text-fade-foreground': {
+          '0%, 50%, 100%': { opacity: '0' },
+          '66.667%, 83.333%': { opacity: '1' },
+        },
+        'animated-gradient-hughdo-text-fade-background': {
+          '0%, 58.333%, 91.667%, 100%': { opacity: '1' },
+          '66.667%, 83.333%': { opacity: '0' },
+        },
       },
       animation: {
         'hey-text-foreground': 'animated-gradient-hey-text-fade-foreground 8s infinite',
         'hey-text-background': 'animated-gradient-hey-text-fade-background 8s infinite',
+        'im-text-foreground': 'animated-gradient-im-text-fade-foreground 8s infinite',
+        'im-text-background': 'animated-gradient-im-text-fade-background 8s infinite',
+        'hughdo-text-foreground': 'animated-gradient-hughdo-text-fade-foreground 8s infinite',
+        'hughdo-text-background': 'animated-gradient-hughdo-text-fade-background 8s infinite',
       },
       typography: (theme: any) => {
         // some fontSizes return [size, props], others just size :/
