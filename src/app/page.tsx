@@ -1,8 +1,9 @@
-import HeroIntro from '@/components/HeroIntro'
+import { HeroIntro, HeroTitle } from '@/components/Hero'
 
 export default function Home() {
   return (
     <div className='wrapper'>
+      <HeroTitle />
       <HeroIntro />
     </div>
   )

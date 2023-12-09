@@ -56,7 +56,11 @@
 
 @layer components {
   .wrapper {
-    @apply mx-auto w-full max-w-7xl px-12;
+    @apply mx-auto w-full max-w-6xl px-12;
+  }
+  .balanced {
+    white-space: unset;
+    text-wrap: balance;
   }
 }
 
