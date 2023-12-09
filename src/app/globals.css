@@ -58,6 +58,10 @@
   .wrapper {
     @apply mx-auto w-full max-w-6xl px-12;
   }
+  .balanced {
+    white-space: unset;
+    text-wrap: balance;
+  }
 }
 
 * {
