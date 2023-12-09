@@ -1,7 +1,7 @@
 import { Analytics } from '@vercel/analytics/react'
 import clsx from 'clsx'
-import { GeistMono } from 'geist/font/mono'
 import type { Metadata } from 'next'
+import localFont from 'next/font/local'
 import { cookies } from 'next/headers'
 
 import Header from '@/components/Header'
@@ -10,11 +10,11 @@ import { ColorTheme, ColorThemeType } from '@/types'
 
 import './globals.css'
 
-// const geistMono = localFont({
-//   src: '../fonts/GeistMonoVF.woff2',
-//   display: 'swap',
-//   variable: '--font-geist-mono',
-// })
+const afacad = localFont({
+  src: '../fonts/Afacad-VariableFont_wght.ttf',
+  display: 'swap',
+  variable: '--font-afacad',
+})
 
 // const robotoMono = localFont({
 //   src : [
@@ -44,8 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const theme: ColorThemeType = savedTheme?.value === ColorTheme.DARK ? ColorTheme.DARK : ColorTheme.LIGHT
 
   return (
-    <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, GeistMono.variable)}>
-      <body className='bg-white font-mono antialiased transition duration-500 dark:bg-gray-900'>
+    <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, afacad.variable)}>
+      <body className='bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
         <Header initialTheme={theme} />
         {children}
       </body>

@@ -33,7 +33,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+        mono: [...fontFamily.mono],
+        sans: ['var(--font-afacad)', ...fontFamily.sans],
       },
       colors: {
         slate: {
