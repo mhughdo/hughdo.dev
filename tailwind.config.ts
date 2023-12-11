@@ -1,3 +1,4 @@
+import colors from 'tailwindcss/colors'
 import { fontFamily } from 'tailwindcss/defaultTheme'
 
 import { type Config } from 'tailwindcss'
@@ -30,6 +31,9 @@ export default {
         800: 'var(--color-gray-800)',
         900: 'var(--color-gray-900)',
       },
+      sky: colors.sky,
+      indigo: colors.indigo,
+      amber: colors.amber,
     },
     extend: {
       fontFamily: {
