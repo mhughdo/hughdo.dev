@@ -1,9 +1,11 @@
+import React from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import clsx from 'clsx'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { cookies } from 'next/headers'
 
+import AccessibilityCheck from '@/components/AccessibilityCheck'
 import Header from '@/components/Header'
 import { COLOR_THEME_COOKIE_NAME } from '@/constants'
 import { ColorTheme, ColorThemeType } from '@/types'
@@ -44,12 +46,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const theme: ColorThemeType = savedTheme?.value === ColorTheme.DARK ? ColorTheme.DARK : ColorTheme.LIGHT
 
   return (
-    <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, afacad.variable)}>
-      <body className='bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
-        <Header initialTheme={theme} />
-        {children}
-      </body>
-      <Analytics />
-    </html>
+    <>
+      <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, afacad.variable)}>
+        <body className='bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
+          <Header initialTheme={theme} />
+          {children}
+        </body>
+        <Analytics />
+      </html>
+      <AccessibilityCheck />
+    </>
   )
 }
