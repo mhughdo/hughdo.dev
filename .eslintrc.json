@@ -1,6 +1,10 @@
 {
   "root": true,
-  "extends": ["next/core-web-vitals", "prettier"],
+  "extends": [
+    "next/core-web-vitals",
+    "prettier",
+    "plugin:jsx-a11y/recommended"
+  ],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -58,5 +62,5 @@
       }
     }
   ],
-  "plugins": ["prettier", "simple-import-sort", "unused-imports"]
+  "plugins": ["prettier", "simple-import-sort", "unused-imports", "jsx-a11y"]
 }
