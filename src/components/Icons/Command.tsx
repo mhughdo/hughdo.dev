@@ -4,8 +4,8 @@ import { motion } from 'framer-motion'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
 const variants = {
-  hidden: { pathLength: 0 },
-  visible: { pathLength: 1 },
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: { pathLength: 1, opacity: 1 },
 }
 
 const Command = (props: SVGProps<SVGSVGElement>) => {
