@@ -13,9 +13,27 @@ import { ColorTheme, ColorThemeType } from '@/types'
 import './globals.css'
 
 const afacad = localFont({
-  src: '../fonts/Afacad-VariableFont_wght.ttf',
+  src: [
+    {
+      path: '../fonts/Afacad-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../fonts/Afacad-Medium.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: './../fonts/Afacad-SemiBold.woff2',
+      weight: '600',
+      style: 'normal',
+    },
+  ],
   display: 'swap',
   variable: '--font-afacad',
+  fallback: ['Adjusted Arial Fallback'],
+  adjustFontFallback: false,
 })
 
 // const robotoMono = localFont({
