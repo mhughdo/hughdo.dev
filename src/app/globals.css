@@ -64,6 +64,15 @@
   }
 }
 
+@font-face {
+  font-family: "Adjusted Arial Fallback";
+  src: local(Arial);
+  size-adjust: 87%;
+  ascent-override: 98%;
+  descent-override: 17%;
+  line-gap-override: 35%;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
