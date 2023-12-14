@@ -17,6 +17,7 @@ export default {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      primary: 'var(--color-primary)',
       white: 'var(--color-white)',
       black: 'var(--color-black)',
       'geist-text-gradient': 'rgba(0,0,0,.8)',

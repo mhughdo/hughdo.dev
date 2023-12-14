@@ -6,6 +6,7 @@
   :root {
     --color-black: #000;
     --color-white: #fff;
+    --color-primary: #ed1858;
     --color-slate-500: #a9adc1;
     --color-gray-100: #f7f7f7;
     --color-gray-200: #e6e9ee;
@@ -38,11 +39,11 @@
     @apply bg-black dark:bg-white;
   }
 
-  .text-primary {
+  .text-primary-color {
     @apply text-black dark:text-white;
   }
 
-  .text-secondary {
+  .text-secondary-color {
     @apply text-gray-500 dark:text-slate-500;
   }
 
