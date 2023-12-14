@@ -25,7 +25,7 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ initialTheme }) => {
   return (
-    <div className='mb-16'>
+    <div>
       <header className='wrapper flex items-center justify-between py-9 lg:py-12'>
         <div className='text-primary flex flex-1 items-center '>
           <Link className='mr-8 text-2xl' href='/'>

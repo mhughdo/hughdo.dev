@@ -1,10 +1,10 @@
-import { HeroIntro, HeroTitle } from '@/components/Hero'
+import { Hero, MainSection } from '@/components/Homepage'
 
 export default function Home() {
   return (
     <div className='wrapper'>
-      <HeroTitle />
-      <HeroIntro />
+      <Hero />
+      <MainSection />
     </div>
   )
 }
