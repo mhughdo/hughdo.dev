@@ -1,5 +1,5 @@
 const NewestPosts = () => {
-  return <div className='text-primary text-lg font-medium uppercase tracking-wider'>Recently published</div>
+  return <div className='text-lg font-medium uppercase tracking-wider text-primary'>Recently published</div>
 }
 
 export default NewestPosts
