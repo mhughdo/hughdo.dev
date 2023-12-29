@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 
 const HeroIntro = () => {
   return (
-    <div className='text-secondary-color md:xl text-balanced md:px-18 mt-6 text-center text-lg lg:px-24 lg:text-2xl'>
+    <div className='text-secondary-color md:xl text-balance md:px-18 mt-6 text-center text-lg lg:px-24 lg:text-2xl'>
       This is my blog. Here, I share my experience as a{' '}
       <span className='relative whitespace-nowrap'>
         software engineer{' '}
