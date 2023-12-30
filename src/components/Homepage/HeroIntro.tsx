@@ -10,7 +10,7 @@ const HeroIntro = ({ className }: HeroIntroProps) => {
   return (
     <div
       className={clsx(
-        'text-secondary-color mt-6 text-balance p-6 text-center text-base md:text-xl lg:p-10 lg:text-2xl',
+        'text-secondary-color text-balance p-6 text-center text-base md:text-xl lg:p-10 lg:text-2xl',
         className
       )}>
       This is my blog. Here, I share my experience as a{' '}
