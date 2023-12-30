@@ -1,7 +1,13 @@
-const HeroTitle = () => {
+import clsx from 'clsx'
+
+type HeroTitleProps = {
+  className?: string
+}
+
+const HeroTitle = ({ className }: HeroTitleProps) => {
   return (
-    <div className='flex justify-center'>
-      <h1 className='text-primary text-4xl font-semibold md:text-6xl lg:text-7xl'>
+    <div className={clsx('flex justify-center p-2 lg:p-4', className)}>
+      <h1 className='text-primary-color text-4xl font-semibold md:text-6xl lg:text-7xl'>
         <span
           data-before='Hey,'
           className='relative inline-block before:absolute before:bottom-0 before:left-0  before:right-0 before:top-0 before:z-0 before:block before:w-full before:animate-hey-text-background before:bg-geist-text-gradient before:bg-gradient-to-b before:to-white before:bg-clip-text before:text-center before:content-[attr(data-before)]'>

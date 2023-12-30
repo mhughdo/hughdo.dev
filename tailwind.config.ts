@@ -17,6 +17,8 @@ export default {
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
+      primary: 'var(--color-primary)',
+      containerLine: 'rgb(var(--color-container-line) / calc(var(--line-opacity) * 3))',
       white: 'var(--color-white)',
       black: 'var(--color-black)',
       'geist-text-gradient': 'rgba(0,0,0,.8)',
@@ -63,6 +65,18 @@ export default {
           500: 'oklch(var(--hughdo-end-gradient))',
         },
       },
+      backgroundImage: ({ theme }) => ({
+        'horizontal-intro-line': `linear-gradient(to right,${theme('colors.containerLine')},${theme(
+          'colors.containerLine'
+        )} 50%,transparent 0,transparent)`,
+        'vertical-intro-line': `linear-gradient(to bottom,${theme('colors.containerLine')},${theme(
+          'colors.containerLine'
+        )} 50%,transparent 0,transparent)`,
+      }),
+      backgroundSize: {
+        'horizontal-intro-line-size': 'var(--line-gap) var(--line-width)',
+        'vertical-intro-line-size': 'var(--line-width) var(--line-gap)',
+      },
       keyframes: {
         'animated-gradient-hey-text-fade-foreground': {
           '0%, 16.667%, 100%': { opacity: '1' },
@@ -90,6 +104,17 @@ export default {
           '0%, 58.333%, 91.667%, 100%': { opacity: '1' },
           '66.667%, 83.333%': { opacity: '0' },
         },
+        'intro-line-width': {
+          '0%': { opacity: '1' },
+          '100%': { width: 'calc(100% + var(--line-offset))', opacity: '0.3' },
+        },
+        'intro-line-height': {
+          '0%': { opacity: '1' },
+          '100%': { height: 'calc(100% + var(--line-offset))', opacity: '0.3' },
+        },
+        'dotted-circle': {
+          '100%': { opacity: '1' },
+        },
       },
       animation: {
         'hey-text-foreground': 'animated-gradient-hey-text-fade-foreground 8s infinite',
@@ -98,6 +123,11 @@ export default {
         'im-text-background': 'animated-gradient-im-text-fade-background 8s infinite',
         'hughdo-text-foreground': 'animated-gradient-hughdo-text-fade-foreground 8s infinite',
         'hughdo-text-background': 'animated-gradient-hughdo-text-fade-background 8s infinite',
+        'intro-line-width': 'intro-line-width var(--line-a-duration) var(--line-a-delay) var(--line-a-easing) forwards',
+        'intro-line-height':
+          'intro-line-height var(--line-a-duration) var(--line-a-delay-plus) var(--line-a-easing) forwards',
+        'dotted-circle':
+          'dotted-circle var(--line-a-duration-half) var(--line-a-delay-ultra) var(--line-a-easing) forwards',
       },
       typography: (theme: any) => {
         // some fontSizes return [size, props], others just size :/

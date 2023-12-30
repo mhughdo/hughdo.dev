@@ -1,9 +1,18 @@
 'use client'
+import clsx from 'clsx'
 import { motion } from 'framer-motion'
 
-const HeroIntro = () => {
+type HeroIntroProps = {
+  className?: string
+}
+
+const HeroIntro = ({ className }: HeroIntroProps) => {
   return (
-    <div className='text-secondary md:xl text-balanced md:px-18 mt-6 text-center text-lg lg:px-24 lg:text-2xl'>
+    <div
+      className={clsx(
+        'text-secondary-color mt-6 text-balance p-6 text-center text-base md:text-xl lg:p-10 lg:text-2xl',
+        className
+      )}>
       This is my blog. Here, I share my experience as a{' '}
       <span className='relative whitespace-nowrap'>
         software engineer{' '}

@@ -36,7 +36,7 @@ const DarkModeToggle = ({ initialTheme, size = 25 }: DarkModeToggleProps) => {
       aria-label={`Activate ${reverseTheme} mode`}
       title={`Activate ${reverseTheme} mode`}
       onClick={handleToggleTheme}
-      className='text-primary opacity-70 hover:opacity-100'>
+      className='text-primary-color opacity-70 hover:opacity-100'>
       <SunMoon width={size} height={size} isDark={isDark} />
       <span className='sr-only'>switch to {reverseTheme} mode</span>
     </button>

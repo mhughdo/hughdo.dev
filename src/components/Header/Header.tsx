@@ -25,14 +25,14 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({ initialTheme }) => {
   return (
-    <div className='mb-16'>
+    <div>
       <header className='wrapper flex items-center justify-between py-9 lg:py-12'>
-        <div className='text-primary flex flex-1 items-center '>
+        <div className='text-primary-color flex flex-1 items-center '>
           <Link className='mr-8 text-2xl' href='/'>
             <h1>Hugh Do</h1>
           </Link>
           <nav className='hidden lg:block'>
-            <ul className='text-secondary flex'>
+            <ul className='text-secondary-color flex'>
               {headerLinks.map((link) => (
                 <li key={link.name} className='px-3 py-2'>
                   <Link href={link.href} className='block text-lg font-medium'>

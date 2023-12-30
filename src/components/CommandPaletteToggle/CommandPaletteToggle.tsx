@@ -16,7 +16,7 @@ const CommandPaletteToggle = ({ size = 25 }: CommandPaletteToggleProps) => {
       aria-label='Show command palette'
       title='Show command palette'
       onClick={handleToggleCommandPalette}
-      className='text-primary opacity-70 hover:opacity-100'>
+      className='text-primary-color opacity-70 hover:opacity-100'>
       <Command width={size} height={size} />
       <span className='sr-only'>Show command palette</span>
     </button>
