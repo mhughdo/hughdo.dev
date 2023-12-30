@@ -17,12 +17,29 @@
     --color-gray-700: #3a3d4a;
     --color-gray-800: #2e3039;
     --color-gray-900: #1f2028;
+    --color-background: bg-white;
+    --color-container-line: 0 0 0;
     --hey-start-gradient: 59.59% 0.24 255.09156059071347;
     --hey-end-gradient: 81.58% 0.189 190.74037768509325;
     --im-start-gradient: 49.07% 0.272 300.45;
     --im-end-gradient: 64.53% 0.292 2.47;
     --hughdo-start-gradient: 67.3% 0.266 25.039656026515278;
     --hughdo-end-gradient: 85.82% 0.201 91.19;
+    --line-offset: 100px;
+    --line-gap: 5px;
+    --line-width: 1px;
+    --line-fade-stop: 93%;
+    --line-opacity: 0.15;
+    --line-a-duration: 1.08s;
+    --line-a-duration-half: calc(var(--line-a-duration) / 2);
+    --line-a-delay: 0.15s;
+    --line-a-delay-plus: calc(var(--line-a-delay) + 0.1s);
+    --line-a-delay-ultra: calc(var(--line-a-delay) + 0.4s);
+    --line-a-easing: cubic-bezier(0.645, 0.045, 0.355, 1);
+    --dotted-circle-size: 36px;
+    @media screen(lg) {
+      --dotted-circle-size: 73px;
+    }
   }
 }
 
@@ -59,6 +76,20 @@
   .wrapper {
     @apply mx-auto w-full max-w-6xl px-12;
   }
+  .mask {
+    mask: linear-gradient(
+        to left,
+        var(--color-background) var(--line-fade-stop),
+        transparent
+      ),
+      linear-gradient(
+        to right,
+        var(--color-background) var(--line-fade-stop),
+        transparent
+      ),
+      linear-gradient(#000, #000);
+    mask-composite: exclude;
+  }
 }
 
 @font-face {
@@ -82,6 +113,11 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 999px var(--color-gray-100) inset !important;
   box-shadow: 0 0 0 999px var(--color-gray-100) inset !important;
   background-clip: content-box !important;
+}
+
+.dark {
+  --color-background: var(--color-gray-900);
+  --color-container-line: 255 255 255;
 }
 
 .dark input:-webkit-autofill,

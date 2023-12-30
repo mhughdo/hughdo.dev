@@ -3,7 +3,7 @@ import Topics from '@/components/Homepage/Topics'
 
 const MainSection = () => {
   return (
-    <main className='grid grid-cols-1 items-start pt-16 md:grid-cols-[2fr_1fr] md:pt-32 lg:pt-40'>
+    <main className='mt-16 grid grid-cols-1 items-start md:mt-32 md:grid-cols-[2fr_1fr] lg:mt-40'>
       <NewestPosts />
       <Topics />
     </main>
