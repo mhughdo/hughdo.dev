@@ -8,7 +8,7 @@ const Hero = () => {
   return (
     <div
       className={clsx(
-        'relative mt-10 min-h-60 lg:mt-16',
+        'relative mt-16 min-h-60 lg:mt-20',
         'before:mask before:absolute before:left-[calc(var(--line-offset)/2*-1)] before:top-0 before:h-[var(--line-width)] before:w-0 before:animate-intro-line-width before:bg-horizontal-intro-line before:bg-horizontal-intro-line-size'
       )}>
       <DottedCircle className='left-[calc(var(--dotted-circle-size)/2*-1)] top-[calc(var(--dotted-circle-size)/2*-1)] h-[--dotted-circle-size] w-[--dotted-circle-size] animate-dotted-circle opacity-0' />
