@@ -3,10 +3,9 @@
 import { FC } from 'react'
 import Link from 'next/link'
 
+import CommandPaletteToggle from '@/components/CommandPaletteToggle'
 import DarkModeToggle from '@/components/DarkModeToggle'
 import { ColorThemeType } from '@/types'
-
-import CommandPaletteToggle from '../CommandPaletteToggle'
 
 const headerLinks = [
   {

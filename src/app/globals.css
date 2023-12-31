@@ -6,8 +6,10 @@
   :root {
     --color-black: #000;
     --color-white: #fff;
-    --color-primary: #ed1858;
+    --color-primary: #4248ed;
+    --color-secondary: #ed1858;
     --color-slate-500: #a9adc1;
+    --color-blue-200: 209deg 71% 84%;
     --color-gray-100: #f7f7f7;
     --color-gray-200: #e6e9ee;
     --color-gray-300: #dde0e4;
@@ -17,8 +19,9 @@
     --color-gray-700: #3a3d4a;
     --color-gray-800: #2e3039;
     --color-gray-900: #1f2028;
-    --color-background: bg-white;
+    --color-background: var(--color-white);
     --color-container-line: 0 0 0;
+    --color-running-line: 215deg 72% 75%;
     --hey-start-gradient: 59.59% 0.24 255.09156059071347;
     --hey-end-gradient: 81.58% 0.189 190.74037768509325;
     --im-start-gradient: 49.07% 0.272 300.45;
@@ -77,7 +80,7 @@
   .wrapper {
     @apply mx-auto w-full max-w-6xl px-12;
   }
-  .mask {
+  .dotted-line-mask {
     mask: linear-gradient(
         to left,
         var(--color-background) var(--line-fade-stop),
@@ -89,6 +92,12 @@
         transparent
       ),
       linear-gradient(#000, #000);
+    mask-composite: exclude;
+  }
+  .running-line-mask {
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     mask-composite: exclude;
   }
 }
@@ -119,6 +128,7 @@ input:-webkit-autofill:active {
 .dark {
   --color-background: var(--color-gray-900);
   --color-container-line: 255 255 255;
+  --color-running-line: var(--color-blue-200);
 }
 
 .dark input:-webkit-autofill,
@@ -141,6 +151,9 @@ body,
 *::before,
 *::after {
   box-sizing: border-box;
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 * {
@@ -149,7 +162,6 @@ body,
 
 body {
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
 }
 
 img,
