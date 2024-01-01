@@ -1,5 +1,5 @@
 import { SVGProps } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
 
@@ -31,7 +31,7 @@ const SunMoon = (props: SunMoonProps) => {
     <AccessibleIcon label='Sun'>
       <svg width={width} height={height} viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
         {sunIconPaths.map((path, index) => (
-          <motion.path
+          <m.path
             key={index}
             initial='hidden'
             animate={!isDark ? 'visible' : 'hidden'}
@@ -52,7 +52,7 @@ const SunMoon = (props: SunMoonProps) => {
             strokeDasharray='0 1'
           />
         ))}
-        <motion.path
+        <m.path
           initial='hidden'
           animate={isDark ? 'visible' : 'hidden'}
           variants={variants}
