@@ -1,5 +1,10 @@
 type Layout = 'Article' | 'Tutorial'
 
+export type Category = {
+  name: string
+  slug: string
+}
+
 export type Options = {
   limit?: number
   categorySlug?: string
