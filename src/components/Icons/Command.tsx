@@ -1,6 +1,6 @@
 import React from 'react'
 import { SVGProps } from 'react'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
 const variants = {
@@ -14,7 +14,7 @@ const Command = (props: SVGProps<SVGSVGElement>) => {
   return (
     <AccessibleIcon label='Command'>
       <svg width={width} height={height} viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <motion.path
+        <m.path
           initial='hidden'
           animate='visible'
           variants={variants}

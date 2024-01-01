@@ -9,6 +9,7 @@ import { cookies } from 'next/headers'
 import AccessibilityCheck from '@/components/AccessibilityCheck'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
+import LazyMotion from '@/components/LazyMotion'
 import { COLOR_THEME_COOKIE_NAME } from '@/constants'
 import { ColorTheme, ColorThemeType } from '@/types'
 
@@ -69,10 +70,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <>
       <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, afacad.variable)}>
         <body className='bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
-          <Header initialTheme={theme} />
-          {children}
-          <Footer />
-          <SpeedInsights />
+          <LazyMotion>
+            <Header initialTheme={theme} />
+            {children}
+            <Footer />
+            <SpeedInsights />
+          </LazyMotion>
         </body>
         <Analytics />
       </html>
