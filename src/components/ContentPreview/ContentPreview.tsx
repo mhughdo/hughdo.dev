@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import Link from 'next/link'
 
+import { Arrow } from '@/components/Icons'
 import { PostMetadata } from '@/types'
 
 type ContentPreviewProps = {
@@ -18,23 +19,15 @@ const ContentPreview: FC<ContentPreviewProps> = ({ postMetadata }) => {
         <p className='text-normal mt-4'>{description} </p>
         <div className='mt-4 flex items-center font-semibold'>
           <span>Read more</span>
-          <svg
+          <Arrow
             className='-rotate-90 transform transition duration-500 group-hover:translate-x-2 group-hover:text-primary'
-            width='24'
-            height='24'
-            viewBox='0 0 32 32'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'>
-            <path
-              fill-rule='evenodd'
-              clip-rule='evenodd'
-              d='M15.101 5.5V23.1094L9.40108 17.4095L8.14807 18.6619L15.9862 26.5L23.852 18.6342L22.5996 17.3817L16.8725 23.1094V5.5H15.101Z'
-              fill='currentColor'></path>
-          </svg>
+            width={24}
+            height={24}
+          />
         </div>
       </Link>
-      <div className='running-line-mask absolute inset-0 hidden h-full w-full rounded-2xl p-px group-hover:block'>
-        <div className='hover:animate-running-line bg-running-line absolute left-1/2 top-1/2 h-full w-full translate-x-[-50%] translate-y-[-50%]' />
+      <div className='running-line-mask absolute inset-0 hidden h-full w-full overflow-hidden rounded-2xl p-[1.5px] group-hover:lg:block'>
+        <div className='absolute left-1/2 top-1/2 h-full w-full translate-x-[-50%] translate-y-[-50%] bg-running-line group-hover:lg:animate-running-line' />
       </div>
     </article>
   )
