@@ -1,8 +1,7 @@
 import React from 'react'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 import clsx from 'clsx'
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'
 import { cookies } from 'next/headers'
 
@@ -57,6 +56,9 @@ const afacad = localFont({
 // }
 // )
 
+const SpeedInsights = dynamic(() => import('../components/VercelSpeedInsights').then((mod) => mod.default))
+const Analytics = dynamic(() => import('../components/VercelAnalytics').then((mod) => mod.default))
+
 export const metadata: Metadata = {
   title: 'Hugh Do',
   description: 'Focus on creating interactive and user-friendly blogs about React, Next.js, Kubernetes, AWS, and more.',
@@ -76,8 +78,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
             <SpeedInsights />
           </LazyMotion>
+          <Analytics />
         </body>
-        <Analytics />
       </html>
       <AccessibilityCheck />
     </>
