@@ -1,3 +1,4 @@
+import { kv } from '@vercel/kv'
 import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
@@ -20,13 +21,46 @@ export const getPostsMetadata = async (options?: Options) => {
 
 const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions): Promise<PostMetadata[]> => {
   const posts = await getMdxFiles({ dir, posts: [], options })
-  return posts.map((post) => {
+  let postsMetadata = await getFromCache<PostMetadata[]>('postsMetadata')
+  if (postsMetadata) {
+    return postsMetadata
+  }
+  postsMetadata = posts.map((post) => {
     const pathname = `/posts/${post.fileName.replace(/\.mdx?$/, '')}`
     return {
       pathname,
       frontmatter: post.grayMatterFile.data,
     }
   })
+  await setToCache('postsMetadata', postsMetadata)
+  return postsMetadata
+}
+
+const getFromCache = async <T>(key: string): Promise<T | null> => {
+  if (process.env.NODE_ENV !== 'production') {
+    return null
+  }
+  try {
+    const res = await kv.get<T>(key)
+    if (!res) {
+      return null
+    }
+    return res
+  } catch (error) {
+    console.log('Error getting from cache', error)
+  }
+  return null
+}
+
+const setToCache = async <T>(key: string, value: T) => {
+  if (process.env.NODE_ENV !== 'production') {
+    return
+  }
+  try {
+    await kv.set(key, value, { ex: 60 * 60, nx: true })
+  } catch (error) {
+    console.log('Error setting to cache', error)
+  }
 }
 
 const getMdxFiles = async ({ dir, posts, options }: GetMdxFilesOptions): Promise<Post[]> => {

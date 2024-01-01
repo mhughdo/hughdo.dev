@@ -11,6 +11,8 @@
   "dependencies": {
     "@radix-ui/react-accessible-icon": "^1.0.3",
     "@vercel/analytics": "^1.1.1",
+    "@vercel/kv": "^1.0.1",
+    "@vercel/speed-insights": "^1.0.2",
     "clsx": "^2.1.0",
     "framer-motion": "^10.16.16",
     "geist": "^1.2.0",
