@@ -1,5 +1,3 @@
-'use client'
-
 import { SVGProps } from 'react'
 import { motion } from 'framer-motion'
 

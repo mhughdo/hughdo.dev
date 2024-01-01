@@ -1,5 +1,5 @@
 const Topics = () => {
-  return <div className='text-lg font-medium uppercase tracking-wider text-primary'>Topics</div>
+  return <div className='text-center text-lg font-medium uppercase tracking-wider text-secondary'>Topics</div>
 }
 
 export default Topics

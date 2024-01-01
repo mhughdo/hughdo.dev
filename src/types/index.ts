@@ -1,4 +1,4 @@
-// Create union ColorTheme and export it
+export * from './content'
 
 const ColorTheme = {
   LIGHT: 'light',

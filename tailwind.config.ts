@@ -18,7 +18,9 @@ export default {
       transparent: 'transparent',
       current: 'currentColor',
       primary: 'var(--color-primary)',
+      secondary: 'var(--color-secondary)',
       containerLine: 'rgb(var(--color-container-line) / calc(var(--line-opacity) * 3))',
+      runningLine: 'hsl(var(--color-running-line))',
       white: 'var(--color-white)',
       black: 'var(--color-black)',
       'geist-text-gradient': 'rgba(0,0,0,.8)',
@@ -36,6 +38,7 @@ export default {
       sky: colors.sky,
       indigo: colors.indigo,
       amber: colors.amber,
+      zinc: colors.zinc,
     },
     extend: {
       fontFamily: {
@@ -72,6 +75,13 @@ export default {
         'vertical-intro-line': `linear-gradient(to bottom,${theme('colors.containerLine')},${theme(
           'colors.containerLine'
         )} 50%,transparent 0,transparent)`,
+        'running-line': `conic-gradient(from 0deg at 50% 51.35%,rgba(185,215,243,0) 0deg,rgba(185,215,243,0) 289.4deg,${theme(
+          'colors.runningLine'
+        )} 318.05deg,${theme(
+          'colors.runningLine'
+        )} 1turn),conic-gradient(from 180deg at 50% 51.35%,rgba(185,215,243,0) 0deg,rgba(185,215,243,0) 287.46deg,${theme(
+          'colors.runningLine'
+        )} 325.02deg,${theme('colors.runningLine')} 1turn)`,
       }),
       backgroundSize: {
         'horizontal-intro-line-size': 'var(--line-gap) var(--line-width)',
@@ -115,6 +125,11 @@ export default {
         'dotted-circle': {
           '100%': { opacity: '1' },
         },
+        'running-line': {
+          '100%': {
+            transform: 'translate(-50%,-50%) rotate(1turn)',
+          },
+        },
       },
       animation: {
         'hey-text-foreground': 'animated-gradient-hey-text-fade-foreground 8s infinite',
@@ -128,6 +143,7 @@ export default {
           'intro-line-height var(--line-a-duration) var(--line-a-delay-plus) var(--line-a-easing) forwards',
         'dotted-circle':
           'dotted-circle var(--line-a-duration-half) var(--line-a-delay-ultra) var(--line-a-easing) forwards',
+        'running-line': 'running-line 10s infinite linear',
       },
       typography: (theme: any) => {
         // some fontSizes return [size, props], others just size :/
