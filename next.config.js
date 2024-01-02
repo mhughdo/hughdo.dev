@@ -4,13 +4,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'res.cloudinary.com',
+        hostname: 'hughdo-dev.imgix.net',
         port: '',
-        pathname: '/hughdo-dev/**',
+        pathname: '/**',
       },
     ],
     loader: 'custom',
-    loaderFile: './src/utils/cloudinaryLoader.ts',
+    path: 'https://hughdo-dev.imgix.net/',
+    loaderFile: './src/helpers/imgixLoader.ts',
   },
 }
 

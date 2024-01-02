@@ -71,10 +71,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <>
       <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, afacad.variable)}>
-        <body className='bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
+        <body className='flex min-h-dvh flex-col justify-between bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
           <LazyMotion>
             <Header initialTheme={theme} />
-            {children}
+            <div className='flex-1'>{children}</div>
             <Footer />
             <SpeedInsights />
           </LazyMotion>

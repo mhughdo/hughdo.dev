@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 
 import { Github, Twitter } from '@/components/Icons'
-import { getCategories } from '@/utils/content'
+import { getCategories } from '@/helpers/content'
 
 const socialLinks = [
   {

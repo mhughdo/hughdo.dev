@@ -13,8 +13,8 @@ const headerLinks = [
     href: '/blog',
   },
   {
-    name: 'Gallery',
-    href: '/gallery',
+    name: 'Photos',
+    href: '/photos',
   },
 ]
 
