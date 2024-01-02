@@ -1,6 +1,6 @@
 import NewestPosts from '@/components/Homepage/NewestPosts'
 import Topics from '@/components/Homepage/Topics'
-import { getCategories, getPostsMetadata } from '@/utils/content'
+import { getCategories, getPostsMetadata } from '@/helpers/content'
 
 const MainSection = async () => {
   const [postsMetadata, categories] = await Promise.all([getPostsMetadata(), getCategories()])
