@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1704211413344,
+      "tag": "0000_typical_rhino",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1704261205269,
+      "tag": "0001_grey_meggan",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 export * from './content'
+export * from './image'
 
 const ColorTheme = {
   LIGHT: 'light',
@@ -7,3 +8,4 @@ const ColorTheme = {
 
 export type ColorThemeType = (typeof ColorTheme)[keyof typeof ColorTheme]
 export { ColorTheme }
+export type PromiseFunctionType<T> = () => Promise<T>
