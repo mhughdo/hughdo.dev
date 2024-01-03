@@ -21,7 +21,7 @@
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.29.3",
     "exif-parser": "^0.1.12",
-    "framer-motion": "^10.16.16",
+    "framer-motion": "^10.17.3",
     "geist": "^1.2.0",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.5",
