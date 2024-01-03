@@ -1,3 +1,5 @@
+import { SQL } from 'drizzle-orm'
+
 import { images } from '@/db/schema'
 
 export type ImageMetadata = {
@@ -15,6 +17,12 @@ export type ImageMetadata = {
   focalLengthIn35mmFormat: string
   createDate: number
   modifyDate: number
+}
+
+export type GetImagesOptions = {
+  limit?: number
+  offset?: number
+  orderBy?: SQL<unknown>[]
 }
 
 export type Image = typeof images.$inferSelect
