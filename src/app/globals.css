@@ -80,6 +80,9 @@
   .wrapper {
     @apply mx-auto w-full max-w-6xl px-12;
   }
+  .wrapper-plus {
+    @apply mx-auto w-full max-w-screen-xl px-20;
+  }
   .dotted-line-mask {
     mask: linear-gradient(
         to left,
