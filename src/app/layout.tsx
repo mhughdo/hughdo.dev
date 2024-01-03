@@ -14,26 +14,10 @@ import { ColorTheme, ColorThemeType } from '@/types'
 
 import './globals.css'
 
-const afacad = localFont({
-  src: [
-    {
-      path: '../fonts/Afacad-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../fonts/Afacad-Medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: './../fonts/Afacad-SemiBold.woff2',
-      weight: '600',
-      style: 'normal',
-    },
-  ],
+const uncutSans = localFont({
+  src: '../fonts/UncutSans-Variable.woff2',
   display: 'swap',
-  variable: '--font-afacad',
+  variable: '--font-uncut-sans',
   fallback: ['Adjusted Arial Fallback'],
   adjustFontFallback: false,
 })
@@ -70,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, afacad.variable)}>
+      <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, uncutSans.variable)}>
         <body className='flex min-h-dvh flex-col justify-between bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
           <LazyMotion>
             <Header initialTheme={theme} />

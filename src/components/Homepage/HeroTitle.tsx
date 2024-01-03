@@ -7,7 +7,7 @@ type HeroTitleProps = {
 const HeroTitle = ({ className }: HeroTitleProps) => {
   return (
     <div className={clsx('flex justify-center p-2 lg:p-4', className)}>
-      <h1 className='text-primary-color text-4xl font-semibold md:text-6xl lg:text-7xl'>
+      <h1 className='text-primary-color text-3xl font-semibold md:text-5xl lg:text-6xl'>
         <span
           data-before='Hey,'
           className='relative inline-block before:absolute before:bottom-0 before:left-0  before:right-0 before:top-0 before:z-0 before:block before:w-full before:animate-hey-text-background before:bg-geist-text-gradient before:bg-gradient-to-b before:to-white before:bg-clip-text before:text-center before:content-[attr(data-before)]'>

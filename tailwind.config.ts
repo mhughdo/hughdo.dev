@@ -43,7 +43,7 @@ export default {
     extend: {
       fontFamily: {
         mono: [...fontFamily.mono],
-        sans: ['var(--font-afacad)', ...fontFamily.sans],
+        sans: ['var(--font-uncut-sans)', ...fontFamily.sans],
       },
       colors: {
         slate: {

@@ -12,8 +12,8 @@ type TopicsProps = {
 const Topics: FC<TopicsProps> = ({ categories }) => {
   return (
     <div>
-      <div className='text-center text-lg font-medium uppercase tracking-wider text-secondary'>Topics</div>
-      <div className='mt-6 space-x-1 space-y-1'>
+      <div className='text-md text-left font-medium uppercase tracking-wider text-secondary md:text-right'>Topics</div>
+      <div className='mt-6 flex flex-row flex-wrap gap-1.5 md:flex-row-reverse'>
         {categories.map((category) => (
           <CategoryPill key={category.slug} category={category} />
         ))}
