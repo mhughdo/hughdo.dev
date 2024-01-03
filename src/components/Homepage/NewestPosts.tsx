@@ -11,7 +11,7 @@ type NewestPostsProps = {
 const NewestPosts: FC<NewestPostsProps> = ({ postsMetadata }) => {
   return (
     <div>
-      <div className='text-center text-lg font-medium uppercase tracking-wider text-secondary'>Recently published</div>
+      <div className='text-md font-medium uppercase tracking-wider text-secondary'>Recently published</div>
       <div className='mt-6' />
       <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
         {postsMetadata.map((postMetadata) => {

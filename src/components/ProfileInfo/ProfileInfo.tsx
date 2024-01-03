@@ -3,8 +3,8 @@ import Image from 'next/image'
 
 const ProfileInfo = () => {
   return (
-    <div className='wrapper pt-8'>
-      <div className='mx-auto flex w-96 flex-col items-center rounded-md bg-primary px-2 py-4 drop-shadow-sm'>
+    <div className='wrapper text-primary-color pt-8'>
+      <div className='mx-auto flex w-96 flex-col items-center rounded-md bg-primary px-2 py-4 drop-shadow-sm dark:bg-zinc-800'>
         <div className='size-40 rounded-full bg-gray-100'>
           <Image
             src='/photos-page/avatar.jpg'
@@ -15,9 +15,9 @@ const ProfileInfo = () => {
           />
         </div>
         <div className='mt-1 text-center'>
-          <h1 className='text-2xl font-bold'>Hugh Do</h1>
+          <h1 className='text-xl font-bold'>Hugh Do</h1>
           <p className='text-secondary-color'>@mhughdo</p>
-          <p className='text-secondary-color text-md'>Hobbyist photographer</p>
+          <p className='text-secondary-color'>Hobbyist photographer</p>
           <div className='text-secondary-color'>
             <svg
               className='mr-1 inline-block'
