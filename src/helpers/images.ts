@@ -9,7 +9,7 @@ export const findImageByName = async (name: string) => {
     const image = await db.query.images.findFirst({ where: eq(images.name, name) })
     return image
   } catch (error) {
-    console.error('Error finding image by name: ', error)
+    console.error('Error finding image by name: ', name, error)
   }
 }
 
@@ -17,6 +17,6 @@ export const insertImage = async (image: NewImage) => {
   try {
     await db.insert(images).values(image)
   } catch (error) {
-    console.error('Error inserting image: ', error)
+    console.error('Error inserting image: ', image.name, error)
   }
 }

@@ -21,40 +21,9 @@ const region = process.env.AWS_DEFAULT_REGION!
 const bucket = process.env.AWS_BUCKET_NAME!
 
 // An API for fetching images from the S3 bucket and save the information of each image like the name, type, url, etc. to the database.
-export async function GET() {
+export async function POST() {
   try {
-    const client = new S3Client({ region: region })
-    const command = new ListObjectsV2Command({
-      Bucket: bucket,
-      Prefix: prefix,
-      Delimiter: '/',
-      MaxKeys: 1000,
-    })
-
-    const objectKeys = []
-
-    let isTruncated = true
-    while (isTruncated) {
-      const { Contents, IsTruncated, NextContinuationToken } = await client.send(command)
-      if (!Contents || !Contents.length) {
-        break
-      }
-      objectKeys.push(...Contents.map((content) => content.Key!).filter((key) => key !== prefix))
-      isTruncated = !!IsTruncated
-      command.input.ContinuationToken = NextContinuationToken
-    }
-    console.log('Number of total images: ', objectKeys.length)
-
-    const unprocessedImagesKey = await findUnprocessedImages(objectKeys)
-    console.log('Number of unprocessed images: ', unprocessedImagesKey.length)
-
-    const promises = []
-    for (const key of unprocessedImagesKey) {
-      promises.push(() => processImage(client, region, bucket, key))
-    }
-
-    await promisePool(promises, 10)
-
+    execute()
     return NextResponse.json({ message: 'done' }, { status: 200 })
   } catch (error) {
     console.log('Error running fetchImages: ', error)
@@ -62,12 +31,47 @@ export async function GET() {
   }
 }
 
+async function execute() {
+  const client = new S3Client({ region: region })
+  const command = new ListObjectsV2Command({
+    Bucket: bucket,
+    Prefix: prefix,
+    Delimiter: '/',
+    MaxKeys: 1000,
+  })
+
+  const objectKeys = []
+
+  let isTruncated = true
+  while (isTruncated) {
+    const { Contents, IsTruncated, NextContinuationToken } = await client.send(command)
+    if (!Contents || !Contents.length) {
+      break
+    }
+    objectKeys.push(...Contents.map((content) => content.Key!).filter((key) => key !== prefix))
+    isTruncated = !!IsTruncated
+    command.input.ContinuationToken = NextContinuationToken
+  }
+  console.log('Number of total images: ', objectKeys.length)
+
+  const unprocessedImagesKey = await findUnprocessedImages(objectKeys)
+  console.log('Number of unprocessed images: ', unprocessedImagesKey.length)
+
+  const promises = []
+  for (const key of unprocessedImagesKey) {
+    promises.push(() => processImage(client, region, bucket, key))
+  }
+
+  await promisePool(promises, 10)
+  console.log('Done')
+}
+
 async function findUnprocessedImages(objectKeys: string[]) {
   const promises = []
   for (const key of objectKeys) {
     promises.push(() => findImageByName(key.replace(prefix, '')))
   }
-  const images = await promisePool(promises, promises.length)
+  const images = await promisePool(promises, 30)
   const processedImagesName = images.filter((image) => image != null).map((image) => image!.name)
   return objectKeys.filter((key) => !processedImagesName.includes(key.replace(prefix, '')))
 }
@@ -126,8 +130,8 @@ async function processImage(client: S3Client, region: string, bucket: string, ke
     url: `https://s3.${region}.amazonaws.com/${bucket}/${key}`,
     blurDataURL: blurDataUrl,
     imageMetadata,
-    createDate: new Date(Number(`${tags?.CreateDate}000`)),
-    modifyDate: new Date(Number(`${tags?.ModifyDate}000`)),
+    createDate: tags?.CreateDate ? new Date(Number(`${tags?.CreateDate}000`)) : null,
+    modifyDate: tags?.ModifyDate ? new Date(Number(`${tags?.ModifyDate}000`)) : null,
   }
   const image = await findImageByName(imageName)
   if (!image) {
