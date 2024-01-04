@@ -1,4 +1,3 @@
-'use client'
 export { default as Arrow } from './Arrow'
 export { default as Command } from './Command'
 export { default as DottedCircle } from './DottedCircle'

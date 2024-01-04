@@ -1,8 +1,8 @@
 import React from 'react'
 import { SVGProps } from 'react'
-import { m } from 'framer-motion'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
+import MotionPath from '@/components/MotionPath'
 const variants = {
   hidden: { pathLength: 0, opacity: 0 },
   visible: { pathLength: 1, opacity: 1 },
@@ -14,7 +14,7 @@ const Command = (props: SVGProps<SVGSVGElement>) => {
   return (
     <AccessibleIcon label='Command'>
       <svg width={width} height={height} viewBox='0 0 25 25' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <m.path
+        <MotionPath
           initial='hidden'
           animate='visible'
           variants={variants}
