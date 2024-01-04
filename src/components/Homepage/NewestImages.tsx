@@ -40,7 +40,7 @@ const NewestImages: FC<NewestImagesProps> = ({ imageList }) => {
           href='/photos'
           className='text-primary-color hover:text-secondary-color relative rounded-full border border-zinc-500 bg-secondary p-2 text-sm hover:bg-zinc-100 dark:border-gray-600 dark:hover:bg-gray-800'>
           See more
-          <div className='via-violet-500 pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr from-indigo-600 to-amber-600 opacity-60 blur-md' />
+          <div className='pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr from-indigo-600 via-violet-500 to-amber-600 opacity-60 blur-md' />
         </Link>
       </div>
     </div>
