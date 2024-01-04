@@ -22,7 +22,7 @@ const ImageGrid = async ({ imageList }: ImageGridProps) => {
               sizes='(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'
               blurDataURL={image.blurDataURL!}
               fill
-              className='object-cover'
+              className='rounded-md object-cover'
             />
           </div>
         ))}

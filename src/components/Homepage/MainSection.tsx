@@ -1,14 +1,25 @@
+import { NewestImages } from '@/components/Homepage'
 import NewestPosts from '@/components/Homepage/NewestPosts'
 import Topics from '@/components/Homepage/Topics'
+import { getImages } from '@/helpers'
 import { getCategories, getPostsMetadata } from '@/helpers/content'
 
 const MainSection = async () => {
-  const [postsMetadata, categories] = await Promise.all([getPostsMetadata(), getCategories()])
+  const [postsMetadata, categories, imageList] = await Promise.all([
+    getPostsMetadata(),
+    getCategories(),
+    getImages({ limit: 6 }),
+  ])
 
   return (
-    <main className='mt-20 grid grid-cols-1 items-start gap-6 md:mt-32 md:grid-cols-[4fr_1fr] lg:mt-40'>
-      <NewestPosts postsMetadata={postsMetadata} />
-      <Topics categories={categories} />
+    <main>
+      <div className='mt-20 grid grid-cols-1 items-start gap-6 md:mt-32 md:grid-cols-[4fr_1fr] lg:mt-40'>
+        <NewestPosts postsMetadata={postsMetadata} />
+        <Topics categories={categories} />
+      </div>
+      <div className='mt-8'>
+        <NewestImages imageList={imageList} />
+      </div>
     </main>
   )
 }

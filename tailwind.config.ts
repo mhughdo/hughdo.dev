@@ -39,6 +39,9 @@ export default {
       indigo: colors.indigo,
       amber: colors.amber,
       zinc: colors.zinc,
+      violet: {
+        500: colors.violet[500],
+      },
     },
     extend: {
       fontFamily: {
