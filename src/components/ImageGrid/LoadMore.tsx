@@ -1,6 +1,6 @@
 'use client'
-import { ReactNode, useEffect, useState } from 'react'
-import { useInView } from 'react-intersection-observer'
+import { ReactNode, useEffect, useRef, useState } from 'react'
+import { useInView } from 'framer-motion'
 
 import { fetchImages } from '@/actions'
 import { Spinner } from '@/components/Icons'
@@ -8,12 +8,13 @@ import { Spinner } from '@/components/Icons'
 let page = 1
 
 const LoadMore = () => {
-  const { ref, inView } = useInView({})
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref)
   const [imageGrid, setImageGrid] = useState<ReactNode[]>([])
   const [endOfList, setEndOfList] = useState(false)
 
   useEffect(() => {
-    if (!inView) return
+    if (!isInView) return
     fetchImages(page).then((returnedImageGrid) => {
       if (!returnedImageGrid) {
         setEndOfList(true)
@@ -22,7 +23,7 @@ const LoadMore = () => {
       setImageGrid((prev) => [...prev, returnedImageGrid])
       page++
     })
-  }, [inView, imageGrid])
+  }, [isInView, imageGrid])
 
   return (
     <div>

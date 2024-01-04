@@ -1,7 +1,7 @@
 import { SVGProps } from 'react'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
-import MotionPath from '@/components/MotionPath'
+import { MotionPath } from '@/components/MotionComponents'
 
 type SunMoonProps = SVGProps<SVGSVGElement> & {
   isDark: boolean

@@ -29,7 +29,6 @@
     "next-mdx-remote": "^4.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-intersection-observer": "^9.5.3",
     "server-only": "^0.0.1",
     "sharp": "^0.33.1"
   },

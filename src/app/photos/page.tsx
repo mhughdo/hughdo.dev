@@ -12,7 +12,7 @@ const Photos = async () => {
       <Banner />
       <ProfileInfo />
       <div className='wrapper-plus my-10'>
-        <ImageGrid imageList={imageList} />
+        <ImageGrid imageList={imageList} first />
         <LoadMore />
       </div>
     </div>

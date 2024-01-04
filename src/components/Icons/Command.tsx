@@ -2,7 +2,7 @@ import React from 'react'
 import { SVGProps } from 'react'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
-import MotionPath from '@/components/MotionPath'
+import { MotionPath } from '@/components/MotionComponents'
 const variants = {
   hidden: { pathLength: 0, opacity: 0 },
   visible: { pathLength: 1, opacity: 1 },
