@@ -22,6 +22,7 @@ export type ImageMetadata = {
 export type GetImagesOptions = {
   limit?: number
   offset?: number
+  page?: number
   orderBy?: SQL<unknown>[]
 }
 

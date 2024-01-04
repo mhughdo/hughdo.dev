@@ -1,6 +1,6 @@
-'use client'
 export { default as Arrow } from './Arrow'
 export { default as Command } from './Command'
 export { default as DottedCircle } from './DottedCircle'
 export * from './SocialIcons'
+export { default as Spinner } from './Spinner'
 export { default as SunMoon } from './SunMoon'
