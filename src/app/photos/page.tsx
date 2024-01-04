@@ -1,5 +1,5 @@
 import Banner from '@/components/Banner'
-import ImageGrid from '@/components/ImageGrid'
+import { ImageGrid, LoadMore } from '@/components/ImageGrid'
 import ProfileInfo from '@/components/ProfileInfo'
 import { getImages } from '@/helpers'
 
@@ -11,7 +11,10 @@ const Photos = async () => {
     <div>
       <Banner />
       <ProfileInfo />
-      <ImageGrid imageList={imageList} />
+      <div className='wrapper-plus my-10'>
+        <ImageGrid imageList={imageList} />
+        <LoadMore />
+      </div>
     </div>
   )
 }

@@ -6,6 +6,7 @@ import { images } from '@/db/schema'
 import { GetImagesOptions, NewImage } from '@/types'
 
 import 'server-only'
+const imagesPerPage = 12
 
 export const findImageByName = async (name: string) => {
   try {
@@ -17,7 +18,12 @@ export const findImageByName = async (name: string) => {
 }
 
 export const getImages = cache(async (options: GetImagesOptions) => {
-  const { limit = 12, offset = 0, orderBy = [desc(images.modifyDate)] } = options
+  let offset = 0
+  const { limit = 12, page = 0, orderBy = [desc(images.modifyDate)] } = options
+  if (page > 0) {
+    offset = page * imagesPerPage
+  }
+
   try {
     const imageList = await db.query.images.findMany({
       limit,
