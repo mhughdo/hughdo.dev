@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import MotionPath from '@/components/MotionPath'
+import { MotionPath } from '@/components/MotionComponents'
 
 type HeroIntroProps = {
   className?: string
