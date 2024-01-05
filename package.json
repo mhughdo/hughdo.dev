@@ -11,7 +11,7 @@
     "db-push": "drizzle-kit push:pg"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.484.0",
+    "@aws-sdk/client-s3": "^3.485.0",
     "@radix-ui/react-accessible-icon": "^1.0.3",
     "@vercel/analytics": "^1.1.1",
     "@vercel/kv": "^1.0.1",
@@ -21,7 +21,7 @@
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.29.3",
     "exif-parser": "^0.1.12",
-    "framer-motion": "^10.17.3",
+    "framer-motion": "^10.17.6",
     "geist": "^1.2.0",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.5",
@@ -48,7 +48,7 @@
     "eslint-plugin-prettier": "^5.1.2",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
-    "postcss": "^8.4.32",
+    "postcss": "^8.4.33",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.10",
     "tailwindcss": "^3.4.0",
