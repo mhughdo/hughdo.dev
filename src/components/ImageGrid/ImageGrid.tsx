@@ -1,4 +1,6 @@
+'use client'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 
 import { MotionDiv } from '@/components/MotionComponents'
 import { Image as ImageType } from '@/types'
@@ -17,6 +19,8 @@ const variants = {
 }
 
 const ImageGrid = ({ imageList, first }: ImageGridProps) => {
+  const router = useRouter()
+
   return (
     <MotionDiv className='mb-4 grid grid-cols-12 gap-4'>
       {imageList.map((image, index) => (
@@ -32,7 +36,8 @@ const ImageGrid = ({ imageList, first }: ImageGridProps) => {
             },
           })}
           key={image.id}
-          className='relative col-span-8 aspect-square md:col-span-6 lg:col-span-4'>
+          onClick={() => router.push(`/photos/${image.name}`)}
+          className='relative col-span-8 aspect-square hover:cursor-zoom-in md:col-span-6 lg:col-span-4'>
           <Image
             src={image.key}
             alt='image'

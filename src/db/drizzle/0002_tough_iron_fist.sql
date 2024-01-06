@@ -1,0 +1,1 @@
+ALTER TABLE "images" ALTER COLUMN "image_metadata" SET NOT NULL;
