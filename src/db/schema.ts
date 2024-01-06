@@ -1,5 +1,7 @@
 import { index, json, pgTable, serial, text, timestamp, varchar } from 'drizzle-orm/pg-core'
 
+import { ImageMetadata } from '@/types'
+
 export const images = pgTable(
   'images',
   {
@@ -12,7 +14,7 @@ export const images = pgTable(
     key: text('key').notNull(),
     url: text('url').notNull(),
     blurDataURL: text('blur_data_url'),
-    imageMetadata: json('image_metadata'),
+    imageMetadata: json('image_metadata').$type<ImageMetadata>().notNull(),
     createDate: timestamp('create_date'),
     modifyDate: timestamp('modify_date'),
   },
