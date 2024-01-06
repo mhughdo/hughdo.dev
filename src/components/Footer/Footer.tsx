@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 
 import { Github, Twitter } from '@/components/Icons'
+import { Signature } from '@/components/Icons'
 import { getCategories } from '@/helpers/content'
 
 const socialLinks = [
@@ -26,9 +27,9 @@ const Footer = async () => {
         <div className='flex flex-col justify-between'>
           <div>
             <Link href='/' className='text-primary-color text-xl font-medium tracking-wider'>
-              Hugh Do
+              <Signature />
             </Link>
-            <div className='mt-2 flex justify-center gap-4 md:justify-start'>
+            <div className='mt-4 flex justify-center gap-2 md:justify-start'>
               {socialLinks.map((socialLink) => (
                 <Link
                   key={socialLink.name}

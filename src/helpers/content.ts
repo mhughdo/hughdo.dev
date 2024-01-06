@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { kv } from '@vercel/kv'
 import fs from 'fs'
 import matter from 'gray-matter'
@@ -9,10 +10,10 @@ import 'server-only'
 
 const contentDirectory = `${process.cwd()}/src/content`
 
-export const getCategories = async () => {
+export const getCategories = cache(async () => {
   const { CATEGORIES } = await import('./category')
   return CATEGORIES
-}
+})
 
 export const getPostsMetadata = async (options?: Options) => {
   const postsMetadata = await getMdxFilesMetadata({ dir: contentDirectory, options })
