@@ -60,8 +60,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header initialTheme={theme} />
             <div className='flex-1'>{children}</div>
             <Footer />
-            <SpeedInsights />
           </LazyMotion>
+          <SpeedInsights />
           <Analytics />
         </body>
       </html>
