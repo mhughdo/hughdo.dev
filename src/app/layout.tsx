@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactNode } from 'react'
 import clsx from 'clsx'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   description: 'Focus on creating interactive and user-friendly blogs about React, Next.js, Kubernetes, AWS, and more.',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
   const savedTheme = cookies().get(COLOR_THEME_COOKIE_NAME)
   const theme: ColorThemeType = savedTheme?.value === ColorTheme.DARK ? ColorTheme.DARK : ColorTheme.LIGHT
 
@@ -60,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Header initialTheme={theme} />
             <div className='flex-1'>{children}</div>
             <Footer />
+            {modal}
           </LazyMotion>
           <SpeedInsights />
           <Analytics />

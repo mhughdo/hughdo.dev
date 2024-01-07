@@ -1,5 +1,6 @@
 export { default as Arrow } from './Arrow'
 export { default as Camera } from './Camera'
+export { default as Close } from './Close'
 export { default as Command } from './Command'
 export { default as DottedCircle } from './DottedCircle'
 export { default as Signature } from './Signature'
