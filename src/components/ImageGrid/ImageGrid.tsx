@@ -22,7 +22,7 @@ const ImageGrid = ({ imageList, first }: ImageGridProps) => {
   const router = useRouter()
 
   return (
-    <MotionDiv className='mb-4 grid grid-cols-12 gap-4'>
+    <MotionDiv className='mb-4 grid grid-cols-1 gap-4 md:grid-cols-12'>
       {imageList.map((image, index) => (
         <MotionDiv
           {...(!first && {

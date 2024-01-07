@@ -8,14 +8,14 @@ import { GetImagesOptions, NewImage } from '@/types'
 import 'server-only'
 const imagesPerPage = 12
 
-export const findImageByName = async (name: string) => {
+export const findImageByName = cache(async (name: string) => {
   try {
     const image = await db.query.images.findFirst({ where: eq(images.name, name) })
     return image
   } catch (error) {
     console.error('Error finding image by name: ', name, error)
   }
-}
+})
 
 export const getImages = cache(async (options: GetImagesOptions) => {
   let offset = 0

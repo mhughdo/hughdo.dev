@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import ImageDetail from '@/components/ImageDetail'
+import ImageDetailModal from '@/components/ImageDetailModal'
 import { findImageByName } from '@/helpers'
 
 const Page = async ({ params }: { params: { slug: string } }) => {
@@ -9,9 +10,9 @@ const Page = async ({ params }: { params: { slug: string } }) => {
   if (!image) notFound()
 
   return (
-    <div className='wrapper'>
-      <ImageDetail image={image} />
-    </div>
+    <ImageDetailModal>
+      <ImageDetail image={image!} />
+    </ImageDetailModal>
   )
 }
 
