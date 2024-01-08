@@ -21,11 +21,14 @@ export const getPostsMetadata = async (options?: Options) => {
 }
 
 const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions): Promise<PostMetadata[]> => {
-  const posts = await getMdxFiles({ dir, posts: [], options })
+  console.time('getMdxFilesMetadata from cache')
   let postsMetadata = await getFromCache<PostMetadata[]>('postsMetadata')
   if (postsMetadata) {
     return postsMetadata
   }
+  console.timeEnd('getMdxFilesMetadata from cache')
+  console.time('getMdxFilesMetadata using fs')
+  const posts = await getMdxFiles({ dir, posts: [], options })
   postsMetadata = posts.map((post) => {
     const pathname = `/posts/${post.fileName.replace(/\.mdx?$/, '')}`
     return {
@@ -33,7 +36,8 @@ const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions)
       frontmatter: post.grayMatterFile.data,
     }
   })
-  await setToCache('postsMetadata', postsMetadata)
+  console.timeEnd('getMdxFilesMetadata using fs')
+  setToCache('postsMetadata', postsMetadata)
   return postsMetadata
 }
 
