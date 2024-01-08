@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { desc, eq } from 'drizzle-orm'
+import { and, desc, eq, isNull } from 'drizzle-orm'
 
 import { db } from '@/db'
 import { images } from '@/db/schema'
@@ -10,7 +10,7 @@ const imagesPerPage = 12
 
 export const findImageById = cache(async (id: number) => {
   try {
-    const image = await db.query.images.findFirst({ where: eq(images.id, id) })
+    const image = await db.query.images.findFirst({ where: and(eq(images.id, id), isNull(images.deletedAt)) })
     return image
   } catch (error) {
     console.error('Error finding image by name: ', id, error)
@@ -19,7 +19,7 @@ export const findImageById = cache(async (id: number) => {
 
 export const findImageByName = cache(async (name: string) => {
   try {
-    const image = await db.query.images.findFirst({ where: eq(images.name, name) })
+    const image = await db.query.images.findFirst({ where: and(eq(images.name, name), isNull(images.deletedAt)) })
     return image
   } catch (error) {
     console.error('Error finding image by name: ', name, error)
@@ -38,6 +38,7 @@ export const getImages = cache(async (options: GetImagesOptions) => {
       limit,
       offset,
       orderBy,
+      where: isNull(images.deletedAt),
     })
     return imageList
   } catch (error) {
