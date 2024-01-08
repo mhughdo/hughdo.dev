@@ -36,7 +36,7 @@ const ImageGrid = ({ imageList, first }: ImageGridProps) => {
             },
           })}
           key={image.id}
-          onClick={() => router.push(`/photos/${image.name}`)}
+          onClick={() => router.push(`/photos/${image.id}`)}
           className='relative col-span-8 aspect-square hover:cursor-zoom-in md:col-span-6 lg:col-span-4'>
           <Image
             src={image.key}
