@@ -34,12 +34,14 @@ export const getImages = cache(async (options: GetImagesOptions) => {
   }
 
   try {
+    console.time('getImages from db')
     const imageList = await db.query.images.findMany({
       limit,
       offset,
       orderBy,
       where: isNull(images.deletedAt),
     })
+    console.timeEnd('getImages from db')
     return imageList
   } catch (error) {
     console.error('Error getting images: ', error)

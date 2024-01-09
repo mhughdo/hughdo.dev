@@ -4,6 +4,7 @@ import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
 
+import { CATEGORIES } from '@/helpers/category'
 import { GetMdxFilesMetadataOptions, GetMdxFilesOptions, GrayMatterFile, Options, Post, PostMetadata } from '@/types'
 
 import 'server-only'
@@ -11,14 +12,13 @@ import 'server-only'
 const contentDirectory = `${process.cwd()}/src/content`
 
 export const getCategories = cache(async () => {
-  const { CATEGORIES } = await import('./category')
   return CATEGORIES
 })
 
-export const getPostsMetadata = async (options?: Options) => {
+export const getPostsMetadata = cache(async (options?: Options) => {
   const postsMetadata = await getMdxFilesMetadata({ dir: contentDirectory, options })
   return postsMetadata
-}
+})
 
 const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions): Promise<PostMetadata[]> => {
   console.time('getMdxFilesMetadata from cache')
@@ -30,7 +30,7 @@ const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions)
   console.time('getMdxFilesMetadata using fs')
   const posts = await getMdxFiles({ dir, posts: [], options })
   postsMetadata = posts.map((post) => {
-    const pathname = `/posts/${post.fileName.replace(/\.mdx?$/, '')}`
+    const pathname = `/blog/${post.fileName.replace(/\.mdx?$/, '')}`
     return {
       pathname,
       frontmatter: post.grayMatterFile.data,
