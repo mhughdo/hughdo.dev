@@ -49,7 +49,7 @@ const Footer = async () => {
           <p className='text-secondary-color text-center md:text-left'>Posts</p>
           <div className='text-primary-color mt-2 grid grid-cols-2 justify-items-center gap-2 text-sm md:justify-items-start'>
             {categories.map((category) => (
-              <Link key={category.slug} href={`/posts/${category.slug}`}>
+              <Link key={category.slug} href={`/category/${category.slug}`}>
                 {category.name}
               </Link>
             ))}

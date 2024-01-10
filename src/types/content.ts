@@ -8,6 +8,7 @@ export type Category = {
 export type Options = {
   limit?: number
   categorySlug?: string
+  slug?: string
 }
 
 export type Frontmatter = {
@@ -21,9 +22,9 @@ export type Frontmatter = {
   meta: {
     keywords: string[]
   }
-  layout: Layout
   bannerCloudinaryPath: string
   bannerAlt?: string
+  image?: string
 }
 
 export type GrayMatterFile = {
@@ -33,21 +34,28 @@ export type GrayMatterFile = {
 
 export type PostMetadata = {
   pathname: string
+  slug: string
+  humanReadableDate: string
   frontmatter: Frontmatter
 }
 
 export type Post = {
-  fileName: string
+  metadata: PostMetadata
+  content: string
+}
+
+export type MdxFile = {
+  pathname: string
+  slug: string
   grayMatterFile: GrayMatterFile
 }
 
 export type GetMdxFilesOptions = {
-  dir: string
-  posts: Post[]
+  dir?: string
   options?: Options
 }
 
 export type GetMdxFilesMetadataOptions = {
-  dir: string
+  dir?: string
   options?: Options
 }

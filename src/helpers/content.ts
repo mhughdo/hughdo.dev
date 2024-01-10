@@ -1,81 +1,89 @@
 import { cache } from 'react'
-import { kv } from '@vercel/kv'
 import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
 
-import { GetMdxFilesMetadataOptions, GetMdxFilesOptions, GrayMatterFile, Options, Post, PostMetadata } from '@/types'
+import { getFromCache, setToCache } from '@/helpers/cache'
+import { CATEGORIES } from '@/helpers/category'
+import {
+  GetMdxFilesMetadataOptions,
+  GetMdxFilesOptions,
+  GrayMatterFile,
+  MdxFile,
+  Options,
+  Post,
+  PostMetadata,
+} from '@/types'
 
 import 'server-only'
 
 const contentDirectory = `${process.cwd()}/src/content`
 
 export const getCategories = cache(async () => {
-  const { CATEGORIES } = await import('./category')
   return CATEGORIES
 })
 
-export const getPostsMetadata = async (options?: Options) => {
-  const postsMetadata = await getMdxFilesMetadata({ dir: contentDirectory, options })
+export const getPostsMetadata = cache(async (options?: Options) => {
+  const postsMetadata = await getMdxFilesMetadata({ options })
   return postsMetadata
-}
+})
 
-const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions): Promise<PostMetadata[]> => {
-  const posts = await getMdxFiles({ dir, posts: [], options })
+const getMdxFilesMetadata = async ({ options }: GetMdxFilesMetadataOptions): Promise<PostMetadata[]> => {
+  console.time('getMdxFilesMetadata from cache')
   let postsMetadata = await getFromCache<PostMetadata[]>('postsMetadata')
   if (postsMetadata) {
+    console.timeEnd('getMdxFilesMetadata from cache')
     return postsMetadata
   }
-  postsMetadata = posts.map((post) => {
-    const pathname = `/posts/${post.fileName.replace(/\.mdx?$/, '')}`
-    return {
-      pathname,
-      frontmatter: post.grayMatterFile.data,
-    }
-  })
-  await setToCache('postsMetadata', postsMetadata)
+
+  console.time('getMdxFilesMetadata using fs')
+  const mdxFiles = await getMdxFiles({ options })
+  postsMetadata = mdxFiles.map(getMdxFileMetadata)
+  console.timeEnd('getMdxFilesMetadata using fs')
+  setToCache('postsMetadata', postsMetadata)
   return postsMetadata
 }
 
-const getFromCache = async <T>(key: string): Promise<T | null> => {
-  if (process.env.NODE_ENV !== 'production') {
+const getMdxFileMetadata = (mdxFile: MdxFile): PostMetadata => {
+  const humanReadableDate = new Date(mdxFile.grayMatterFile.data.publishedOn).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+  return {
+    humanReadableDate,
+    slug: mdxFile.slug,
+    pathname: mdxFile.pathname,
+    frontmatter: mdxFile.grayMatterFile.data,
+  }
+}
+
+export const getPost = async (slug: string): Promise<Post | null> => {
+  const mdxFiles = await getMdxFiles({ options: { slug } })
+  if (!mdxFiles.length) {
     return null
   }
-  try {
-    const res = await kv.get<T>(key)
-    if (!res) {
-      return null
-    }
-    return res
-  } catch (error) {
-    console.log('Error getting from cache', error)
-  }
-  return null
-}
+  const mdxFile = mdxFiles[0]
 
-const setToCache = async <T>(key: string, value: T) => {
-  if (process.env.NODE_ENV !== 'production') {
-    return
-  }
-  try {
-    await kv.set(key, value, { ex: 60 * 60, nx: true })
-  } catch (error) {
-    console.log('Error setting to cache', error)
+  return {
+    metadata: getMdxFileMetadata(mdxFile),
+    content: mdxFile.grayMatterFile.content,
   }
 }
 
-const getMdxFiles = async ({ dir, posts, options }: GetMdxFilesOptions): Promise<Post[]> => {
-  const { limit = 20, categorySlug } = options || {}
+const getMdxFiles = async ({ dir = contentDirectory, options }: GetMdxFilesOptions): Promise<MdxFile[]> => {
+  const mdxFiles: MdxFile[] = []
+  const { limit = 20, categorySlug, slug: postSlug } = options || {}
 
   const dirFiles = fs.readdirSync(dir)
 
   dirFiles.forEach((file) => {
     const filePath = path.join(dir, file)
-    const fileStat = fs.lstatSync(filePath)
 
-    if (fileStat.isDirectory()) {
-      return getMdxFiles({ dir: filePath, posts, options })
-    } else if (file.endsWith('.mdx')) {
+    if (file.endsWith('.mdx')) {
+      if (postSlug && file !== `${postSlug}.mdx`) {
+        return
+      }
       const content = fs.readFileSync(filePath, 'utf8')
       const data = matter(content) as unknown as GrayMatterFile
       const metadata = data.data
@@ -87,13 +95,14 @@ const getMdxFiles = async ({ dir, posts, options }: GetMdxFilesOptions): Promise
       if (categorySlug && !metadata.categories.includes(categorySlug)) {
         return
       }
-
-      posts.push({ fileName: file, grayMatterFile: data })
-      if (limit && posts.length >= limit) {
-        return posts
+      const slug = file.replace(/\.mdx?$/, '')
+      const pathname = `/blog/${slug}`
+      mdxFiles.push({ pathname, slug, grayMatterFile: data })
+      if (limit && mdxFiles.length >= limit) {
+        return mdxFiles
       }
     }
   })
 
-  return posts
+  return mdxFiles
 }
