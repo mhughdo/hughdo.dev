@@ -1,9 +1,9 @@
 import { cache } from 'react'
-import { kv } from '@vercel/kv'
 import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
 
+import { getFromCache, setToCache } from '@/helpers/cache'
 import { CATEGORIES } from '@/helpers/category'
 import { GetMdxFilesMetadataOptions, GetMdxFilesOptions, GrayMatterFile, Options, Post, PostMetadata } from '@/types'
 
@@ -39,33 +39,6 @@ const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions)
   console.timeEnd('getMdxFilesMetadata using fs')
   setToCache('postsMetadata', postsMetadata)
   return postsMetadata
-}
-
-const getFromCache = async <T>(key: string): Promise<T | null> => {
-  if (process.env.NODE_ENV !== 'production') {
-    return null
-  }
-  try {
-    const res = await kv.get<T>(key)
-    if (!res) {
-      return null
-    }
-    return res
-  } catch (error) {
-    console.log('Error getting from cache', error)
-  }
-  return null
-}
-
-const setToCache = async <T>(key: string, value: T) => {
-  if (process.env.NODE_ENV !== 'production') {
-    return
-  }
-  try {
-    await kv.set(key, value, { ex: 60 * 60, nx: true })
-  } catch (error) {
-    console.log('Error setting to cache', error)
-  }
 }
 
 const getMdxFiles = async ({ dir, posts, options }: GetMdxFilesOptions): Promise<Post[]> => {

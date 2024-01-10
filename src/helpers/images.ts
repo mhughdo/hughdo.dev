@@ -3,6 +3,7 @@ import { and, desc, eq, isNull } from 'drizzle-orm'
 
 import { db } from '@/db'
 import { images } from '@/db/schema'
+import { getFromCache, setToCache } from '@/helpers/cache'
 import { GetImagesOptions, NewImage } from '@/types'
 
 import 'server-only'
@@ -34,14 +35,19 @@ export const getImages = cache(async (options: GetImagesOptions) => {
   }
 
   try {
-    console.time('getImages from db')
-    const imageList = await db.query.images.findMany({
+    const imageListQuery = db.query.images.findMany({
       limit,
       offset,
       orderBy,
       where: isNull(images.deletedAt),
     })
-    console.timeEnd('getImages from db')
+    const rawSql = buildRawSql(imageListQuery.toSQL())
+    let imageList = await getFromCache<(typeof images.$inferSelect)[]>(rawSql)
+    if (imageList) {
+      return imageList
+    }
+    imageList = await imageListQuery
+    setToCache(rawSql, imageList, 60 * 60 * 24)
     return imageList
   } catch (error) {
     console.error('Error getting images: ', error)
@@ -55,4 +61,14 @@ export const insertImage = async (image: NewImage) => {
   } catch (error) {
     console.error('Error inserting image: ', image.name, error)
   }
+}
+
+const buildRawSql = ({ sql, params }: { sql: string; params: unknown[] }) => {
+  let sqlStatement = sql
+  params.forEach((param, index) => {
+    const paramIndex = index + 1
+    const paramValue = param as number
+    sqlStatement = sqlStatement.replace(`$${paramIndex}`, paramValue.toString())
+  })
+  return sqlStatement
 }
