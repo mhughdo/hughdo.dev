@@ -3,6 +3,40 @@ import { notFound } from 'next/navigation'
 import MDX from '@/components/MDX'
 import { getPost } from '@/helpers'
 
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const post = await getPost(params.slug)
+  if (!post) {
+    return
+  }
+
+  const { seoTitle: title, publishedOn: publishedTime, description, image } = post.metadata.frontmatter
+  const keywords = post.metadata.frontmatter.meta.keywords || []
+  const ogImage = image ? `https://hughdo.dev${image}` : `https://hughdo.dev/og?title=${title}`
+  return {
+    title,
+    description,
+    ...(keywords.length > 0 && { keywords }),
+    openGraph: {
+      title,
+      description,
+      type: 'article',
+      publishedTime,
+      url: `https://hughdo.dev/blog/${post.metadata.slug}`,
+      images: [
+        {
+          url: ogImage,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+  }
+}
+
 const Page = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params
   const post = await getPost(slug)

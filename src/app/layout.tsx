@@ -44,8 +44,37 @@ const SpeedInsights = dynamic(() => import('../components/VercelSpeedInsights').
 const Analytics = dynamic(() => import('../components/VercelAnalytics').then((mod) => mod.default))
 
 export const metadata: Metadata = {
-  title: 'Hugh Do',
-  description: 'Focus on creating interactive and user-friendly blogs about React, Next.js, Kubernetes, AWS, and more.',
+  metadataBase: new URL('https://hughdo.dev'),
+  title: {
+    default: 'Hugh Do',
+    template: '%s | Hugh Do',
+  },
+  description:
+    'Focus on creating interactive and easy-to-understand blogs about React, Next.js, Kubernetes, AWS, and more.',
+  openGraph: {
+    title: 'Hugh Do',
+    description:
+      'Focus on creating interactive and easy-to-understand blogs about React, Next.js, Kubernetes, AWS, and more.',
+    url: 'https://hughdo.dev',
+    siteName: 'Hugh Do',
+    locale: 'en_US',
+    type: 'website',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  twitter: {
+    title: 'Hugh Do',
+    card: 'summary_large_image',
+  },
 }
 
 export default function RootLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
