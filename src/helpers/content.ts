@@ -24,9 +24,10 @@ const getMdxFilesMetadata = async ({ dir, options }: GetMdxFilesMetadataOptions)
   console.time('getMdxFilesMetadata from cache')
   let postsMetadata = await getFromCache<PostMetadata[]>('postsMetadata')
   if (postsMetadata) {
+    console.timeEnd('getMdxFilesMetadata from cache')
     return postsMetadata
   }
-  console.timeEnd('getMdxFilesMetadata from cache')
+
   console.time('getMdxFilesMetadata using fs')
   const posts = await getMdxFiles({ dir, posts: [], options })
   postsMetadata = posts.map((post) => {
