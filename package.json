@@ -19,6 +19,7 @@
     "@vercel/postgres": "^0.5.1",
     "@vercel/speed-insights": "^1.0.2",
     "blurhash": "^2.0.5",
+    "bright": "^0.8.4",
     "clsx": "^2.1.0",
     "drizzle-orm": "^0.29.3",
     "exif-parser": "^0.1.12",

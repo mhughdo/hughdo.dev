@@ -24,8 +24,10 @@ const DarkModeToggle = ({ initialTheme, size = 25 }: DarkModeToggleProps) => {
 
     if (newTheme === ColorTheme.DARK) {
       document.documentElement.classList.add(ColorTheme.DARK)
+      document.documentElement.setAttribute('data-theme', ColorTheme.DARK)
     } else {
       document.documentElement.classList.remove(ColorTheme.DARK)
+      document.documentElement.setAttribute('data-theme', ColorTheme.LIGHT)
     }
   }
 

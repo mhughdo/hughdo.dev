@@ -54,7 +54,10 @@ export default function RootLayout({ children, modal }: { children: ReactNode; m
 
   return (
     <>
-      <html lang='en' className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, uncutSans.variable)}>
+      <html
+        lang='en'
+        data-theme={theme}
+        className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, uncutSans.variable)}>
         <body className='flex min-h-dvh flex-col justify-between bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
           <LazyMotion>
             <Header initialTheme={theme} />
