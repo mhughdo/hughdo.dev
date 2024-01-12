@@ -1,4 +1,7 @@
+import { Suspense } from 'react'
+
 import { NewestImages } from '@/components/Homepage'
+import NewestImagesSkeleton from '@/components/Homepage/NewestImagesSkeleton'
 import NewestPosts from '@/components/Homepage/NewestPosts'
 import Topics from '@/components/Homepage/Topics'
 import { getImages } from '@/helpers'
@@ -18,7 +21,9 @@ const MainSection = async () => {
         <Topics categories={categories} />
       </div>
       <div className='mt-8'>
-        <NewestImages imageList={imageList} />
+        <Suspense fallback={<NewestImagesSkeleton />}>
+          <NewestImages imageList={imageList} />
+        </Suspense>
       </div>
     </main>
   )
