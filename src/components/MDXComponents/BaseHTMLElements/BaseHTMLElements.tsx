@@ -45,7 +45,7 @@ function CustomLink(props: ComponentPropsWithRef<'a'>) {
 
   if (href.startsWith('/')) {
     return (
-      <Link href={href} {...props}>
+      <Link href={href} {...props} className='internal-link'>
         {props.children}
       </Link>
     )
@@ -57,7 +57,7 @@ function CustomLink(props: ComponentPropsWithRef<'a'>) {
   }
 
   // eslint-disable-next-line jsx-a11y/anchor-has-content
-  return <a target='_blank' rel='noopener noreferrer' {...props} />
+  return <a target='_blank' rel='noopener noreferrer' {...props} className='external-link' />
 }
 
 export { CustomLink, Headings }

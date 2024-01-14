@@ -20,7 +20,7 @@ const ContentPreview: FC<ContentPreviewProps> = ({ postMetadata }) => {
         <div className='mt-4 flex items-center text-xs font-semibold'>
           <span>Read more</span>
           <Arrow
-            className='-rotate-90 transform transition duration-500 group-hover:translate-x-2 group-hover:text-primary'
+            className='transform transition duration-500 group-hover:translate-x-2 group-hover:text-primary'
             width={24}
             height={24}
           />

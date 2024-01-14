@@ -13,6 +13,7 @@ type CustomCodeProps = {
   children: ReactNode
 }
 
+// Code component uses Mono font by feault so there is no need to specify the `font-mono` class
 const CustomCode: FC<CustomCodeProps> = (props) => {
   return <Code lang='js' lineNumbers {...props} />
 }
