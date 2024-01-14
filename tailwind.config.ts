@@ -1,3 +1,4 @@
+import typography from '@tailwindcss/typography'
 import colors from 'tailwindcss/colors'
 import { fontFamily } from 'tailwindcss/defaultTheme'
 
@@ -45,7 +46,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        mono: [...fontFamily.mono],
+        mono: ['var(--font-roboto-mono)', ...fontFamily.mono],
         sans: ['var(--font-uncut-sans)', ...fontFamily.sans],
       },
       colors: {
@@ -270,5 +271,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [typography],
 } satisfies Config

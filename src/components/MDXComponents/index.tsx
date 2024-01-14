@@ -1,5 +1,6 @@
+import CustomCode from '@/components/MDXComponents/CustomCode'
+
 import { CustomLink, Headings } from './BaseHTMLElements'
-import CustomCode from './CustomCode'
 
 // TODO: add more components here
 export const Components = {
