@@ -37,9 +37,11 @@ export default {
         900: 'var(--color-gray-900)',
       },
       sky: colors.sky,
+      blue: colors.blue,
       indigo: colors.indigo,
       amber: colors.amber,
       zinc: colors.zinc,
+      red: colors.red,
       violet: {
         500: colors.violet[500],
       },

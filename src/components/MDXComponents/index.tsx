@@ -2,6 +2,7 @@ import { HTMLAttributes } from 'react'
 
 import { CustomLink, Headings } from '@/components/MDXComponents/BaseHTMLElements'
 import { List } from '@/components/MDXComponents/BaseHTMLElements'
+import Callout from '@/components/MDXComponents/Callout'
 import { CustomCode, InlineCode } from '@/components/MDXComponents/CustomCode'
 
 // TODO: add more components here
@@ -13,4 +14,5 @@ export const Components = {
   a: CustomLink,
   pre: CustomCode,
   InlineCode,
+  Callout,
 }

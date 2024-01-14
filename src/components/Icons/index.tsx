@@ -1,4 +1,5 @@
 export { default as Arrow } from './Arrow'
+export * from './Callout'
 export { default as Camera } from './Camera'
 export { default as Close } from './Close'
 export { default as Command } from './Command'
