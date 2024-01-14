@@ -78,7 +78,7 @@ const Page = async ({ params }: { params: { slug: string } }) => {
         </h1>
         <p className='text-secondary-color mt-1 text-center text-sm'>{metadata.humanReadableDate}</p>
       </div>
-      <div className='blog-wrapper md:prose-lg text-primary-color prose prose-quoteless prose-neutral dark:prose-invert'>
+      <div className='blog-wrapper text-primary-color prose-quoteless prose prose-neutral dark:prose-invert md:prose-lg'>
         <MDX source={content} />
       </div>
     </div>
