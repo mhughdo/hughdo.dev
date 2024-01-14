@@ -120,6 +120,47 @@
   line-gap-override: 0%;
 }
 
+.prose .anchor {
+  @apply invisible absolute no-underline;
+
+  margin-left: -1em;
+  width: 80%;
+  max-width: 700px;
+  cursor: pointer;
+}
+
+.anchor:hover {
+  @apply visible;
+}
+
+.prose .anchor:after {
+  @apply text-zinc-300 dark:text-zinc-700;
+  content: "#";
+}
+
+.prose *:hover > .anchor {
+  @apply visible;
+}
+
+.prose a {
+  text-decoration: none;
+  font-weight: 500;
+  &.internal-link {
+    color: var(--color-primary);
+    &:hover {
+      box-shadow: 0 2px 0 0 var(--color-primary);
+      transition: box-shadow 0.2s ease;
+    }
+  }
+  &.external-link {
+    box-shadow: 0 1px 0 0 var(--color-primary);
+    &:hover {
+      box-shadow: 0 2px 0 0 var(--color-primary);
+      transition: box-shadow 0.2s ease;
+    }
+  }
+}
+
 .prose ul {
   margin: 0;
   margin-bottom: 1.25em;
@@ -162,6 +203,72 @@
   padding: 0;
   &:last-of-type {
     margin-top: 0;
+  }
+}
+
+.prose p {
+  margin: 0;
+  margin-bottom: 1.33333em;
+  &:last-of-type {
+    margin-top: 0;
+  }
+}
+
+.prose img {
+  @apply m-0;
+}
+
+.prose h2,
+h3,
+h4 {
+  @apply font-medium tracking-tighter !important;
+}
+
+.prose strong {
+  @apply font-medium;
+}
+
+pre::-webkit-scrollbar {
+  display: none;
+}
+
+pre {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.prose blockquote {
+  @apply text-secondary-color px-4 md:px-8;
+  font-style: italic;
+  position: relative;
+  border: 0;
+  width: fit-content;
+  line-height: 1em;
+  p {
+    &::before,
+    &::after {
+      content: "";
+    }
+  }
+  &::before {
+    content: "“";
+    font-family: "Times New Roman", serif;
+    font-size: 5em;
+    font-weight: bold;
+    position: absolute;
+    left: -8px;
+    top: 4px;
+    opacity: 0.25;
+  }
+  &::after {
+    content: "”";
+    font-family: "Times New Roman", serif;
+    font-size: 5em;
+    font-weight: bold;
+    position: absolute;
+    right: 0px;
+    top: 4px;
+    opacity: 0.25;
   }
 }
 
