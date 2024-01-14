@@ -30,6 +30,7 @@ const NewestImages: FC<NewestImagesProps> = ({ imageList }) => {
               alt='one of the newest images'
               placeholder='blur'
               blurDataURL={image.blurDataURL!}
+              quality={90}
               fill
               sizes='(min-width: 768px) 33vw, 100vw'
               className='rounded-md object-cover object-center'

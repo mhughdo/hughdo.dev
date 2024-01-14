@@ -11,6 +11,7 @@ const Banner = () => {
           src='/photos-page/_DSC9244-Enhanced-NR.jpg'
           placeholder='blur'
           blurDataURL={bannerBlurDataUrl}
+          quality={90}
           fill
           sizes='100vw'
           className='object-cover object-center'
