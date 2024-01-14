@@ -272,6 +272,15 @@ pre {
   }
 }
 
+.prose .inline-code {
+  @apply inline rounded-sm bg-secondary px-1 py-0.5 font-mono font-normal tracking-tight;
+  box-decoration-break: clone;
+  &::before,
+  &::after {
+    content: "";
+  }
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
