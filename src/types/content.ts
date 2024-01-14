@@ -1,11 +1,10 @@
-type Layout = 'Article' | 'Tutorial'
-
 export type Category = {
   name: string
   slug: string
 }
 
 export type Options = {
+  dir?: string
   limit?: number
   categorySlug?: string
   slug?: string
@@ -48,14 +47,4 @@ export type MdxFile = {
   pathname: string
   slug: string
   grayMatterFile: GrayMatterFile
-}
-
-export type GetMdxFilesOptions = {
-  dir?: string
-  options?: Options
-}
-
-export type GetMdxFilesMetadataOptions = {
-  dir?: string
-  options?: Options
 }

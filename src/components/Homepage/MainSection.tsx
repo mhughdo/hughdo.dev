@@ -9,7 +9,7 @@ import { getCategories, getPostsMetadata } from '@/helpers/content'
 
 const MainSection = async () => {
   const [postsMetadata, categories, imageList] = await Promise.all([
-    getPostsMetadata(),
+    getPostsMetadata({ limit: 20 }),
     getCategories(),
     getImages({ limit: 6 }),
   ])

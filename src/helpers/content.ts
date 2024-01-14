@@ -5,15 +5,7 @@ import path from 'path'
 
 import { getFromCache, setToCache } from '@/helpers/cache'
 import { CATEGORIES } from '@/helpers/category'
-import {
-  GetMdxFilesMetadataOptions,
-  GetMdxFilesOptions,
-  GrayMatterFile,
-  MdxFile,
-  Options,
-  Post,
-  PostMetadata,
-} from '@/types'
+import { GrayMatterFile, MdxFile, Options, Post, PostMetadata } from '@/types'
 
 import 'server-only'
 
@@ -24,20 +16,27 @@ export const getCategories = cache(async () => {
 })
 
 export const getPostsMetadata = cache(async (options?: Options) => {
-  const postsMetadata = await getMdxFilesMetadata({ options })
+  const postsMetadata = await getMdxFilesMetadata(options)
   return postsMetadata
 })
 
-const getMdxFilesMetadata = async ({ options }: GetMdxFilesMetadataOptions): Promise<PostMetadata[]> => {
+const getMdxFilesMetadata = async (options?: Options): Promise<PostMetadata[]> => {
   console.time('getMdxFilesMetadata from cache')
-  let postsMetadata = await getFromCache<PostMetadata[]>('postsMetadata')
+  const { limit, categorySlug, slug: postSlug } = options || {}
+  const cacheKey = `postsMetadata${limit != null ? `-${limit}` : ''}${categorySlug ? `-${categorySlug}` : ''}${
+    postSlug ? `-${postSlug}` : ''
+  }`
+
+  console.log('cacheKey: ', cacheKey)
+
+  let postsMetadata = await getFromCache<PostMetadata[]>(cacheKey)
   if (postsMetadata) {
     console.timeEnd('getMdxFilesMetadata from cache')
     return postsMetadata
   }
 
   console.time('getMdxFilesMetadata using fs')
-  const mdxFiles = await getMdxFiles({ options })
+  const mdxFiles = await getMdxFiles(options)
   postsMetadata = mdxFiles.map(getMdxFileMetadata)
   console.timeEnd('getMdxFilesMetadata using fs')
   setToCache('postsMetadata', postsMetadata)
@@ -59,7 +58,7 @@ const getMdxFileMetadata = (mdxFile: MdxFile): PostMetadata => {
 }
 
 export const getPost = async (slug: string): Promise<Post | null> => {
-  const mdxFiles = await getMdxFiles({ options: { slug } })
+  const mdxFiles = await getMdxFiles({ slug })
   if (!mdxFiles.length) {
     return null
   }
@@ -71,9 +70,9 @@ export const getPost = async (slug: string): Promise<Post | null> => {
   }
 }
 
-const getMdxFiles = async ({ dir = contentDirectory, options }: GetMdxFilesOptions): Promise<MdxFile[]> => {
+const getMdxFiles = async (options?: Options): Promise<MdxFile[]> => {
   const mdxFiles: MdxFile[] = []
-  const { limit = 20, categorySlug, slug: postSlug } = options || {}
+  const { limit, categorySlug, slug: postSlug, dir = contentDirectory } = options || {}
 
   const dirFiles = fs.readdirSync(dir)
 
