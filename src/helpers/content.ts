@@ -27,8 +27,6 @@ const getMdxFilesMetadata = async (options?: Options): Promise<PostMetadata[]> =
     postSlug ? `-${postSlug}` : ''
   }`
 
-  console.log('cacheKey: ', cacheKey)
-
   let postsMetadata = await getFromCache<PostMetadata[]>(cacheKey)
   if (postsMetadata) {
     console.timeEnd('getMdxFilesMetadata from cache')

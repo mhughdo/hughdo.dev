@@ -1,16 +1,17 @@
 import { SVGProps } from 'react'
+import clsx from 'clsx'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
 
-type DottedCircleProps = {
+type ArrowProps = {
   className?: string
 } & SVGProps<SVGSVGElement>
 
-const Arrow = ({ width, height, className }: DottedCircleProps) => {
+const Arrow = ({ width, height, className }: ArrowProps) => {
   return (
     <AccessibleIcon label='Arrow'>
       <svg
-        className={className}
+        className={clsx(className, '-rotate-90 ')}
         width={width}
         height={height}
         viewBox='0 0 32 32'

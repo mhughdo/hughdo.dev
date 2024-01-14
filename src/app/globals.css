@@ -120,6 +120,51 @@
   line-gap-override: 0%;
 }
 
+.prose ul {
+  margin: 0;
+  margin-bottom: 1.25em;
+  padding-left: 0;
+  list-style: none;
+  list-style-position: outside;
+  list-style-image: none;
+  li {
+    * {
+      margin: 0;
+    }
+    span {
+      padding-right: 0.5em;
+    }
+    div {
+      flex: 1;
+    }
+    display: flex;
+    align-items: center;
+  }
+}
+
+.prose ol {
+  margin: 0;
+  margin-bottom: 1.25em;
+  list-style-position: outside;
+  list-style-image: none;
+  > ::marker {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+  svg {
+    display: none;
+  }
+}
+
+.prose li {
+  margin: 0;
+  margin-bottom: 1em;
+  padding: 0;
+  &:last-of-type {
+    margin-top: 0;
+  }
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
