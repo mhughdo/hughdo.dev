@@ -41,6 +41,8 @@ export default {
       indigo: colors.indigo,
       amber: colors.amber,
       zinc: colors.zinc,
+      orange: colors.orange,
+      yellow: colors.yellow,
       red: colors.red,
       violet: {
         500: colors.violet[500],
