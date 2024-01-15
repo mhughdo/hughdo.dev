@@ -1,4 +1,5 @@
 import { ComponentPropsWithRef, createElement } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 function slugify(str: string) {
@@ -60,4 +61,8 @@ function CustomLink(props: ComponentPropsWithRef<'a'>) {
   return <a target='_blank' rel='noopener noreferrer' {...props} className='external-link' />
 }
 
-export { CustomLink, Headings }
+function RoundedImage(props) {
+  return <Image alt={props.alt} className='rounded-lg' {...props} />
+}
+
+export { CustomLink, Headings, RoundedImage }

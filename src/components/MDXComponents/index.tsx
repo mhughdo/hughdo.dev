@@ -1,6 +1,6 @@
 import { HTMLAttributes } from 'react'
 
-import { CustomLink, Headings } from '@/components/MDXComponents/BaseHTMLElements'
+import { CustomLink, Headings, RoundedImage } from '@/components/MDXComponents/BaseHTMLElements'
 import { List } from '@/components/MDXComponents/BaseHTMLElements'
 import Callout from '@/components/MDXComponents/Callout'
 import { CustomCode, InlineCode } from '@/components/MDXComponents/CustomCode'
@@ -13,6 +13,7 @@ export const Components = {
   li: List.Item,
   a: CustomLink,
   pre: CustomCode,
+  Image: RoundedImage,
   InlineCode,
   Callout,
 }

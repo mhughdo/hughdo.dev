@@ -9,6 +9,10 @@ import { ColorThemeType } from '@/types'
 
 const headerLinks = [
   {
+    name: 'Latest',
+    href: '/latest',
+  },
+  {
     name: 'Blog',
     href: '/blog',
   },
