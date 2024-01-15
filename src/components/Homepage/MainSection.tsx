@@ -4,15 +4,10 @@ import { NewestImages } from '@/components/Homepage'
 import NewestImagesSkeleton from '@/components/Homepage/NewestImagesSkeleton'
 import NewestPosts from '@/components/Homepage/NewestPosts'
 import Topics from '@/components/Homepage/Topics'
-import { getImages } from '@/helpers'
 import { getCategories, getPostsMetadata } from '@/helpers/content'
 
 const MainSection = async () => {
-  const [postsMetadata, categories, imageList] = await Promise.all([
-    getPostsMetadata({ limit: 20 }),
-    getCategories(),
-    getImages({ limit: 6 }),
-  ])
+  const [postsMetadata, categories] = await Promise.all([getPostsMetadata({ limit: 20 }), getCategories()])
 
   return (
     <main>
@@ -22,7 +17,7 @@ const MainSection = async () => {
       </div>
       <div className='mt-8'>
         <Suspense fallback={<NewestImagesSkeleton />}>
-          <NewestImages imageList={imageList} />
+          <NewestImages />
         </Suspense>
       </div>
     </main>
