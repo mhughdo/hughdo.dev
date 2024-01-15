@@ -18,29 +18,33 @@ export const findImageById = cache(async (id: number) => {
   }
 })
 
-export const findImageByName = cache(async (name: string) => {
+export const findImageByName = async (name: string) => {
   try {
     const image = await db.query.images.findFirst({ where: and(eq(images.name, name), isNull(images.deletedAt)) })
     return image
   } catch (error) {
     console.error('Error finding image by name: ', name, error)
   }
-})
+}
 
-export const getImages = cache(async (options: GetImagesOptions) => {
+export const getImages = cache(async (options?: GetImagesOptions) => {
   let offset = 0
-  const { limit = 12, page = 0, orderBy = [desc(images.modifyDate)] } = options
+  const { limit, page = 0, orderBy = [desc(images.modifyDate)] } = options || {}
   if (page > 0) {
     offset = page * imagesPerPage
   }
 
   try {
-    const imageListQuery = db.query.images.findMany({
-      limit,
-      offset,
-      orderBy,
-      where: isNull(images.deletedAt),
-    })
+    const imageListQuery = db
+      .select()
+      .from(images)
+      .where(isNull(images.deletedAt))
+      .orderBy(...orderBy)
+      .offset(offset)
+      .$dynamic()
+    if (limit) {
+      imageListQuery.limit(limit)
+    }
     const rawSql = buildRawSql(imageListQuery.toSQL())
     let imageList = await getFromCache<(typeof images.$inferSelect)[]>(rawSql)
     if (imageList) {

@@ -55,7 +55,7 @@ const getMdxFileMetadata = (mdxFile: MdxFile): PostMetadata => {
   }
 }
 
-export const getPost = async (slug: string): Promise<Post | null> => {
+export const getPost = cache(async (slug: string): Promise<Post | null> => {
   const mdxFiles = await getMdxFiles({ slug })
   if (!mdxFiles.length) {
     return null
@@ -66,7 +66,7 @@ export const getPost = async (slug: string): Promise<Post | null> => {
     metadata: getMdxFileMetadata(mdxFile),
     content: mdxFile.grayMatterFile.content,
   }
-}
+})
 
 const getMdxFiles = async (options?: Options): Promise<MdxFile[]> => {
   const mdxFiles: MdxFile[] = []

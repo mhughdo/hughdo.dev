@@ -6,6 +6,8 @@ import NewestPosts from '@/components/Homepage/NewestPosts'
 import Topics from '@/components/Homepage/Topics'
 import { getCategories, getPostsMetadata } from '@/helpers/content'
 
+export const revalidate = 3600
+
 const MainSection = async () => {
   const [postsMetadata, categories] = await Promise.all([getPostsMetadata({ limit: 20 }), getCategories()])
 
