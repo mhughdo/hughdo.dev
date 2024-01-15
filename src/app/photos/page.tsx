@@ -6,7 +6,7 @@ import { getImages } from '@/helpers'
 export const revalidate = 3600
 
 const Photos = async () => {
-  const imageList = await getImages({})
+  const imageList = await getImages({ limit: 12 })
   return (
     <div>
       <Banner />

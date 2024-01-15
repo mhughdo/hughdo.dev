@@ -6,10 +6,12 @@ import MDX from '@/components/MDX'
 import { getPost, getPostsMetadata } from '@/helpers'
 
 export const dynamicParams = false
+export const revalidate = 3600
 export async function generateStaticParams() {
   const postsMetadata = await getPostsMetadata({ limit: -1 })
   return postsMetadata.map((post) => ({ slug: post.slug }))
 }
+
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = await getPost(params.slug)
   if (!post) {
