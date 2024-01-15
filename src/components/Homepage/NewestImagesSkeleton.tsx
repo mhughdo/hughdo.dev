@@ -17,7 +17,10 @@ const NewestImagesSkeleton = () => {
         {gridCols.map((_, index) => (
           <div
             key={index}
-            className={clsx(`${gridCols[index]}`, 'relative h-96 animate-pulse bg-gray-200 dark:bg-gray-800')}
+            className={clsx(
+              `${gridCols[index]}`,
+              'relative h-96 animate-pulse rounded-md bg-gray-200 dark:bg-gray-800'
+            )}
           />
         ))}
       </div>

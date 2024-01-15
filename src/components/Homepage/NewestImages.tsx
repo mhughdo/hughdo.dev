@@ -1,13 +1,8 @@
-import { FC } from 'react'
 import clsx from 'clsx'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { Image as ImageType } from '@/types'
-
-type NewestImagesProps = {
-  imageList: ImageType[]
-}
+import { getImages } from '@/helpers'
 
 const gridCols = [
   'col-span-full md:col-start-1 md:col-end-5',
@@ -18,7 +13,9 @@ const gridCols = [
   'col-span-full md:col-start-10 md:col-end-13',
 ]
 
-const NewestImages: FC<NewestImagesProps> = ({ imageList }) => {
+const NewestImages = async () => {
+  const imageList = await getImages({ limit: 6 })
+
   return (
     <div>
       <div className='text-md font-medium uppercase tracking-wider text-secondary'>Newest images</div>
