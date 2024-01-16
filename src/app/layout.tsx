@@ -22,6 +22,23 @@ const uncutSans = localFont({
   adjustFontFallback: false,
 })
 
+const robotoMono = localFont({
+  src: [
+    {
+      path: '../fonts/RobotoMono-Regular.woff2',
+      style: 'normal',
+      weight: '400',
+    },
+    {
+      path: '../fonts/RobotoMono-SemiBold.woff2',
+      style: 'semibold',
+      weight: '600',
+    },
+  ],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+})
+
 const SpeedInsights = dynamic(() => import('../components/VercelSpeedInsights').then((mod) => mod.default))
 const Analytics = dynamic(() => import('../components/VercelAnalytics').then((mod) => mod.default))
 
@@ -68,7 +85,7 @@ export default function RootLayout({ children, modal }: { children: ReactNode; m
       <html
         lang='en'
         data-theme={theme}
-        className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, uncutSans.variable)}>
+        className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, uncutSans.variable, robotoMono.variable)}>
         <body className='flex min-h-dvh flex-col justify-between bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
           <LazyMotion>
             <Header initialTheme={theme} />
