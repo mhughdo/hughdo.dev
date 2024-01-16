@@ -25,12 +25,12 @@ const uncutSans = localFont({
 const robotoMono = localFont({
   src: [
     {
-      path: '../../../fonts/RobotoMono-Regular.woff2',
+      path: '../fonts/RobotoMono-Regular.woff2',
       style: 'normal',
       weight: '400',
     },
     {
-      path: '../../../fonts/RobotoMono-SemiBold.woff2',
+      path: '../fonts/RobotoMono-SemiBold.woff2',
       style: 'semibold',
       weight: '600',
     },
