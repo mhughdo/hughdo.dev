@@ -16,28 +16,32 @@ const BlogList: FC<BlogListProps> = ({ title, postsMetadata }) => {
         <h1 className='text-4xl'>{title}</h1>
         <span className='pr-8 text-lg'>{postsMetadata.length} posts</span>
       </div>
-      <div className='grid grid-cols-4 gap-8 md:grid-cols-8 lg:grid-cols-12'>
-        {postsMetadata.map((post) => {
-          return (
-            <div key={post.slug} className='col-span-4'>
-              <Link href={`/blog/${post.slug}`} className='group block'>
-                <div className='relative aspect-[3/4]'>
-                  <Image
-                    src={post.frontmatter.bannerPath}
-                    alt={post.frontmatter.bannerAlt}
-                    layout='fill'
-                    className='rounded-lg object-cover'
-                  />
-                </div>
-                <div className='text-secondary-color mt-4 text-lg font-medium'>{post.humanReadableDate}</div>
-                <div className='text-primary-color mt-2 text-xl font-medium transition-colors duration-100 group-hover:text-primary md:text-2xl'>
-                  {post.frontmatter.title}
-                </div>
-              </Link>
-            </div>
-          )
-        })}
-      </div>
+      {postsMetadata.length === 0 ? (
+        <div className='text-secondary-color pt-2 text-center text-lg'>No posts found.</div>
+      ) : (
+        <div className='grid grid-cols-4 gap-8 md:grid-cols-8 lg:grid-cols-12'>
+          {postsMetadata.map((post) => {
+            return (
+              <div key={post.slug} className='col-span-4'>
+                <Link href={`/blog/${post.slug}`} className='group block'>
+                  <div className='relative aspect-[3/4]'>
+                    <Image
+                      src={post.frontmatter.bannerPath}
+                      alt={post.frontmatter.bannerAlt}
+                      fill
+                      className='rounded-lg object-cover'
+                    />
+                  </div>
+                  <div className='text-secondary-color mt-4 text-lg font-medium'>{post.humanReadableDate}</div>
+                  <div className='text-primary-color mt-2 text-xl font-medium transition-colors duration-100 group-hover:text-primary md:text-2xl'>
+                    {post.frontmatter.title}
+                  </div>
+                </Link>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }

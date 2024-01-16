@@ -19,7 +19,7 @@ const socialLinks = [
 ]
 
 const Footer = async () => {
-  const categories = await getCategories()
+  const categories = getCategories()
 
   return (
     <footer className='mt-20 border-t dark:border-t-gray-600'>

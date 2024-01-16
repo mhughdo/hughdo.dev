@@ -1,20 +1,21 @@
-'use client'
-
 import { FC } from 'react'
 import Link from 'next/link'
 
 import CommandPaletteToggle from '@/components/CommandPaletteToggle'
 import DarkModeToggle from '@/components/DarkModeToggle'
+import BlogNavItem from '@/components/Header/BlogNavItem'
+import { getCategories } from '@/helpers'
 import { ColorThemeType } from '@/types'
 
-const headerLinks = [
+const headerItems = [
   {
     name: 'Latest',
     href: '/latest',
   },
   {
     name: 'Blog',
-    href: '/blog',
+    href: '/category',
+    component: BlogNavItem,
   },
   {
     name: 'Photos',
@@ -26,7 +27,9 @@ interface HeaderProps {
   initialTheme: ColorThemeType
 }
 
-const Header: FC<HeaderProps> = ({ initialTheme }) => {
+const Header: FC<HeaderProps> = async ({ initialTheme }) => {
+  const categories = getCategories()
+
   return (
     <div>
       <header className='wrapper flex items-center justify-between py-9 lg:py-12'>
@@ -36,13 +39,19 @@ const Header: FC<HeaderProps> = ({ initialTheme }) => {
           </Link>
           <nav className='hidden lg:block'>
             <ul className='text-secondary-color flex'>
-              {headerLinks.map((link) => (
-                <li key={link.name} className='px-3 py-2'>
-                  <Link href={link.href} className='block text-base font-medium'>
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
+              {headerItems.map((item) => {
+                return (
+                  <li key={item.name} className='px-3 py-2'>
+                    {item.component ? (
+                      <item.component key={item.name} name={item.name} href={item.href} categories={categories} />
+                    ) : (
+                      <Link href={item.href} className='block text-base font-medium'>
+                        {item.name}
+                      </Link>
+                    )}
+                  </li>
+                )
+              })}
             </ul>
           </nav>
         </div>
