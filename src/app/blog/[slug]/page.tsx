@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { notFound } from 'next/navigation'
 
 import MDX from '@/components/MDX'
@@ -55,7 +54,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
   const { frontmatter } = metadata
 
   return (
-    <div className={clsx(robotoMono.variable)}>
+    <div>
       <script
         type='application/ld+json'
         suppressHydrationWarning
