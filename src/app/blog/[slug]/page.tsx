@@ -8,12 +8,12 @@ import { getPost, getPostsMetadata } from '@/helpers'
 export const dynamicParams = false
 export const revalidate = 3600
 export async function generateStaticParams() {
-  const postsMetadata = await getPostsMetadata({ limit: -1 })
+  const postsMetadata = getPostsMetadata({ limit: -1 })
   return postsMetadata.map((post) => ({ slug: post.slug }))
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = await getPost(params.slug)
+  const post = getPost(params.slug)
   if (!post) {
     return
   }
@@ -63,9 +63,9 @@ const robotoMono = localFont({
   variable: '--font-roboto-mono',
 })
 
-const Page = async ({ params }: { params: { slug: string } }) => {
+const Page = ({ params }: { params: { slug: string } }) => {
   const { slug } = params
-  const post = await getPost(slug)
+  const post = getPost(slug)
   if (!post) {
     notFound()
   }
@@ -74,15 +74,37 @@ const Page = async ({ params }: { params: { slug: string } }) => {
 
   return (
     <div className={clsx(robotoMono.variable)}>
+      <script
+        type='application/ld+json'
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: frontmatter.title,
+            datePublished: frontmatter.publishedOn,
+            dateModified: frontmatter.publishedOn,
+            description: frontmatter.description,
+            image: frontmatter.image
+              ? `https://hughdo.dev${frontmatter.image}`
+              : `https://hughdo.dev/og?title=${frontmatter.title}`,
+            url: `https://hughdo.dev/blog/${slug}`,
+            author: {
+              '@type': 'Person',
+              name: 'Lee Robinson',
+            },
+          }),
+        }}
+      />
       <div className='py-16'>
         <h1 className='text-primary-color text-balane text-center text-4xl font-medium tracking-tighter'>
           {frontmatter.title}
         </h1>
         <p className='text-secondary-color mt-1 text-center text-sm'>{metadata.humanReadableDate}</p>
       </div>
-      <div className='blog-wrapper text-primary-color prose-quoteless prose prose-neutral dark:prose-invert md:prose-lg'>
+      <main className='blog-wrapper text-primary-color prose-quoteless prose prose-neutral dark:prose-invert md:prose-lg'>
         <MDX source={content} />
-      </div>
+      </main>
     </div>
   )
 }

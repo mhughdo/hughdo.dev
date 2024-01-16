@@ -305,6 +305,8 @@ input:-webkit-autofill:active {
   --color-background: var(--color-gray-900);
   --color-container-line: 255 255 255;
   --color-running-line: var(--color-blue-200);
+  --color-primary: #3e6fff;
+  --color-secondary: #ff336d;
 }
 
 .dark input:-webkit-autofill,

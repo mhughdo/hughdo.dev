@@ -11,7 +11,7 @@ const ICONS = {
     Component: Info,
   },
   danger: {
-    className: 'text-red-600',
+    className: 'text-orange-600',
     Component: Danger,
   },
 }
@@ -23,13 +23,13 @@ type CalloutProps = {
 }
 
 const bgColor = {
-  info: 'bg-indigo-50 dark:bg-sky-900/20',
-  danger: 'bg-red-100/70 dark:bg-red-900/20',
+  info: 'bg-blue-100/70 dark:bg-sky-900/10',
+  danger: 'bg-yellow-100/70 dark:bg-yellow-700/10',
 }
 
 const labelBgColor = {
-  info: 'bg-blue-600 dark:bg-indigo-800',
-  danger: 'bg-red-600/90 dark:bg-red-700/80',
+  info: 'bg-blue-600 dark:bg-blue-800',
+  danger: 'bg-orange-500/80 dark:bg-orange-600/80',
 }
 
 const Callout: FC<CalloutProps> = ({ variant = 'info', children, label }) => {

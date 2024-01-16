@@ -21,8 +21,8 @@ export type Frontmatter = {
   meta: {
     keywords: string[]
   }
-  bannerCloudinaryPath: string
-  bannerAlt?: string
+  bannerPath: string
+  bannerAlt: string
   image?: string
 }
 

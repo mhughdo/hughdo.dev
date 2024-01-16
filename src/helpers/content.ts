@@ -3,7 +3,6 @@ import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
 
-import { getFromCache, setToCache } from '@/helpers/cache'
 import { CATEGORIES } from '@/helpers/category'
 import { GrayMatterFile, MdxFile, Options, Post, PostMetadata } from '@/types'
 
@@ -11,33 +10,43 @@ import 'server-only'
 
 const contentDirectory = `${process.cwd()}/src/content`
 
-export const getCategories = cache(async () => {
+type CategorySlugs = (typeof CATEGORIES)[number]['slug']
+type CatgegoryNames = (typeof CATEGORIES)[number]['name']
+
+export const getCategories = cache(() => {
   return CATEGORIES
 })
 
-export const getPostsMetadata = cache(async (options?: Options) => {
-  const postsMetadata = await getMdxFilesMetadata(options)
+export const getPostsMetadata = cache((options?: Options) => {
+  const postsMetadata = getMdxFilesMetadata(options)
   return postsMetadata
 })
 
-const getMdxFilesMetadata = async (options?: Options): Promise<PostMetadata[]> => {
-  console.time('getMdxFilesMetadata from cache')
-  const { limit, categorySlug, slug: postSlug } = options || {}
-  const cacheKey = `postsMetadata${limit != null ? `-${limit}` : ''}${categorySlug ? `-${categorySlug}` : ''}${
-    postSlug ? `-${postSlug}` : ''
-  }`
+export const getPostsMetadataGroupedByCategory = cache((options?: Options) => {
+  const postsMetadata = getMdxFilesMetadata(options)
+  // Even though 1 post can have multiple categories, it can only be displayed in 1 category page
+  // So we group posts by their first category
+  const postsMetadataGroupedByCategory = postsMetadata.reduce(
+    (acc, postMetadata) => {
+      const firstCategory = postMetadata.frontmatter.categories[0] as CategorySlugs
+      const name = CATEGORIES.find((category) => category.slug === firstCategory)?.name
+      if (!name) {
+        throw new Error(`Category name not found for slug: ${firstCategory}`)
+      }
+      if (!acc[name]) {
+        acc[name] = []
+      }
+      acc[name].push(postMetadata)
+      return acc
+    },
+    {} as Record<CatgegoryNames, PostMetadata[]>
+  )
+  return postsMetadataGroupedByCategory
+})
 
-  let postsMetadata = await getFromCache<PostMetadata[]>(cacheKey)
-  if (postsMetadata) {
-    console.timeEnd('getMdxFilesMetadata from cache')
-    return postsMetadata
-  }
-
-  console.time('getMdxFilesMetadata using fs')
-  const mdxFiles = await getMdxFiles(options)
-  postsMetadata = mdxFiles.map(getMdxFileMetadata)
-  console.timeEnd('getMdxFilesMetadata using fs')
-  setToCache('postsMetadata', postsMetadata)
+const getMdxFilesMetadata = (options?: Options): PostMetadata[] => {
+  const mdxFiles = getMdxFiles(options)
+  const postsMetadata = mdxFiles.map(getMdxFileMetadata)
   return postsMetadata
 }
 
@@ -55,8 +64,8 @@ const getMdxFileMetadata = (mdxFile: MdxFile): PostMetadata => {
   }
 }
 
-export const getPost = cache(async (slug: string): Promise<Post | null> => {
-  const mdxFiles = await getMdxFiles({ slug })
+export const getPost = cache((slug: string): Post | null => {
+  const mdxFiles = getMdxFiles({ slug })
   if (!mdxFiles.length) {
     return null
   }
@@ -68,7 +77,7 @@ export const getPost = cache(async (slug: string): Promise<Post | null> => {
   }
 })
 
-const getMdxFiles = async (options?: Options): Promise<MdxFile[]> => {
+const getMdxFiles = (options?: Options): MdxFile[] => {
   const mdxFiles: MdxFile[] = []
   const { limit, categorySlug, slug: postSlug, dir = contentDirectory } = options || {}
 
