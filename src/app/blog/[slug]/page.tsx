@@ -1,16 +1,15 @@
 import clsx from 'clsx'
-import localFont from 'next/font/local'
 import { notFound } from 'next/navigation'
 
 import MDX from '@/components/MDX'
-import { getPost, getPostsMetadata } from '@/helpers'
+import { getPost } from '@/helpers'
 
 export const dynamicParams = false
 export const revalidate = 3600
-export async function generateStaticParams() {
-  const postsMetadata = getPostsMetadata({ limit: -1 })
-  return postsMetadata.map((post) => ({ slug: post.slug }))
-}
+// export async function generateStaticParams() {
+//   const postsMetadata = getPostsMetadata({ limit: -1 })
+//   return postsMetadata.map((post) => ({ slug: post.slug }))
+// }
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = getPost(params.slug)
@@ -46,23 +45,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-const robotoMono = localFont({
-  src: [
-    {
-      path: '../../../fonts/RobotoMono-Regular.woff2',
-      style: 'normal',
-      weight: '400',
-    },
-    {
-      path: '../../../fonts/RobotoMono-SemiBold.woff2',
-      style: 'semibold',
-      weight: '600',
-    },
-  ],
-  display: 'swap',
-  variable: '--font-roboto-mono',
-})
-
 const Page = ({ params }: { params: { slug: string } }) => {
   const { slug } = params
   const post = getPost(slug)
@@ -91,7 +73,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
             url: `https://hughdo.dev/blog/${slug}`,
             author: {
               '@type': 'Person',
-              name: 'Lee Robinson',
+              name: 'Hugh Do',
             },
           }),
         }}
