@@ -2,7 +2,7 @@ import BlogList from '@/components/BlogList'
 import { getPostsMetadata } from '@/helpers'
 
 const Page = async () => {
-  const postsMetadata = await getPostsMetadata()
+  const postsMetadata = getPostsMetadata()
 
   return (
     <main className='wrapper text-primary-color pt-16'>

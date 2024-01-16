@@ -8,7 +8,7 @@ import { getPost, getPostsMetadata } from '@/helpers'
 export const dynamicParams = false
 export const revalidate = 3600
 export async function generateStaticParams() {
-  const postsMetadata = await getPostsMetadata({ limit: -1 })
+  const postsMetadata = getPostsMetadata({ limit: -1 })
   return postsMetadata.map((post) => ({ slug: post.slug }))
 }
 

@@ -3,7 +3,6 @@ import fs from 'fs'
 import matter from 'gray-matter'
 import path from 'path'
 
-import { getFromCache, setToCache } from '@/helpers/cache'
 import { CATEGORIES } from '@/helpers/category'
 import { GrayMatterFile, MdxFile, Options, Post, PostMetadata } from '@/types'
 
@@ -18,13 +17,13 @@ export const getCategories = cache(() => {
   return CATEGORIES
 })
 
-export const getPostsMetadata = cache(async (options?: Options) => {
-  const postsMetadata = await getMdxFilesMetadata(options)
+export const getPostsMetadata = cache((options?: Options) => {
+  const postsMetadata = getMdxFilesMetadata(options)
   return postsMetadata
 })
 
-export const getPostsMetadataGroupedByCategory = cache(async (options?: Options) => {
-  const postsMetadata = await getMdxFilesMetadata(options)
+export const getPostsMetadataGroupedByCategory = cache((options?: Options) => {
+  const postsMetadata = getMdxFilesMetadata(options)
   // Even though 1 post can have multiple categories, it can only be displayed in 1 category page
   // So we group posts by their first category
   const postsMetadataGroupedByCategory = postsMetadata.reduce(
@@ -45,24 +44,9 @@ export const getPostsMetadataGroupedByCategory = cache(async (options?: Options)
   return postsMetadataGroupedByCategory
 })
 
-const getMdxFilesMetadata = async (options?: Options): Promise<PostMetadata[]> => {
-  console.time('getMdxFilesMetadata from cache')
-  const { limit, categorySlug, slug: postSlug } = options || {}
-  const cacheKey = `postsMetadata${limit != null ? `-${limit}` : ''}${categorySlug ? `-${categorySlug}` : ''}${
-    postSlug ? `-${postSlug}` : ''
-  }`
-
-  let postsMetadata = await getFromCache<PostMetadata[]>(cacheKey)
-  if (postsMetadata) {
-    console.timeEnd('getMdxFilesMetadata from cache')
-    return postsMetadata
-  }
-
-  console.time('getMdxFilesMetadata using fs')
+const getMdxFilesMetadata = (options?: Options): PostMetadata[] => {
   const mdxFiles = getMdxFiles(options)
-  postsMetadata = mdxFiles.map(getMdxFileMetadata)
-  console.timeEnd('getMdxFilesMetadata using fs')
-  setToCache('postsMetadata', postsMetadata)
+  const postsMetadata = mdxFiles.map(getMdxFileMetadata)
   return postsMetadata
 }
 
