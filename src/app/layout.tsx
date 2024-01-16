@@ -61,7 +61,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
   const savedTheme = cookies().get(COLOR_THEME_COOKIE_NAME)
-  const theme: ColorThemeType = savedTheme?.value === ColorTheme.DARK ? ColorTheme.DARK : ColorTheme.LIGHT
+  const theme: ColorThemeType = savedTheme?.value === ColorTheme.LIGHT ? ColorTheme.LIGHT : ColorTheme.DARK
 
   return (
     <>

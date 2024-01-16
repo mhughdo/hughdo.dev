@@ -1,4 +1,5 @@
 import { ComponentPropsWithRef, createElement } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 function slugify(str: string) {
@@ -60,4 +61,14 @@ function CustomLink(props: ComponentPropsWithRef<'a'>) {
   return <a target='_blank' rel='noopener noreferrer' {...props} className='external-link' />
 }
 
-export { CustomLink, Headings }
+function RoundedImage(props: ComponentPropsWithRef<'img'>) {
+  const { src, alt, width, height, ...rest } = props
+
+  if (!src || !alt || !width || !height) {
+    throw new Error('Image must have src, alt, width, and height props passed to it.')
+  }
+
+  return <Image alt={alt} className='rounded-lg' src={src} {...rest} />
+}
+
+export { CustomLink, Headings, RoundedImage }

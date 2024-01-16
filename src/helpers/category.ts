@@ -1,4 +1,10 @@
+import { Category } from '@/types'
+
 export const CATEGORIES = [
+  {
+    name: 'General',
+    slug: 'general',
+  },
   {
     name: 'React',
     slug: 'react',
@@ -27,8 +33,4 @@ export const CATEGORIES = [
     name: 'JavaScript',
     slug: 'javascript',
   },
-  {
-    name: 'Backend',
-    slug: 'backend',
-  },
-]
+] as const satisfies Category[]
