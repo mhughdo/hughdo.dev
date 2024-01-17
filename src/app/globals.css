@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    color-scheme: light;
     --color-black: #000;
     --color-white: #fff;
     --color-primary: #4248ed;
@@ -299,6 +300,10 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 999px var(--color-gray-100) inset !important;
   box-shadow: 0 0 0 999px var(--color-gray-100) inset !important;
   background-clip: content-box !important;
+}
+
+.dark {
+  color-scheme: dark;
 }
 
 .dark {

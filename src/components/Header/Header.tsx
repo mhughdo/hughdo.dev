@@ -1,11 +1,9 @@
-import { FC } from 'react'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
 import CommandPaletteToggle from '@/components/CommandPaletteToggle'
-import DarkModeToggle from '@/components/DarkModeToggle'
 import BlogNavItem from '@/components/Header/BlogNavItem'
 import { getCategories } from '@/helpers'
-import { ColorThemeType } from '@/types'
 
 const headerItems = [
   {
@@ -23,11 +21,9 @@ const headerItems = [
   },
 ]
 
-interface HeaderProps {
-  initialTheme: ColorThemeType
-}
+const DarkModeToggle = dynamic(() => import('../DarkModeToggle').then((mod) => mod.default), { ssr: false })
 
-const Header: FC<HeaderProps> = async ({ initialTheme }) => {
+const Header = async () => {
   const categories = getCategories()
 
   return (
@@ -57,7 +53,7 @@ const Header: FC<HeaderProps> = async ({ initialTheme }) => {
         </div>
         <div className='flex gap-4'>
           <CommandPaletteToggle />
-          <DarkModeToggle initialTheme={initialTheme} />
+          <DarkModeToggle />
         </div>
       </header>
     </div>

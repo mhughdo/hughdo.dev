@@ -1,35 +1,24 @@
 'use client'
-import { useState } from 'react'
-import Cookie from 'js-cookie'
+import { useEffect, useState } from 'react'
 
 import { SunMoon } from '@/components/Icons'
-import { COLOR_THEME_COOKIE_NAME } from '@/constants'
-import { ColorTheme, ColorThemeType } from '@/types'
+import { ColorTheme } from '@/types'
 
 interface DarkModeToggleProps {
-  initialTheme: ColorThemeType
   size?: number
 }
 
-const DarkModeToggle = ({ initialTheme, size = 25 }: DarkModeToggleProps) => {
-  const [theme, setTheme] = useState(initialTheme)
+const DarkModeToggle = ({ size = 25 }: DarkModeToggleProps) => {
+  const [theme, setTheme] = useState(global.window?.__theme || ColorTheme.LIGHT)
   const reverseTheme = theme === ColorTheme.LIGHT ? ColorTheme.DARK : ColorTheme.LIGHT
   const isDark = theme === ColorTheme.DARK
 
-  function handleToggleTheme() {
-    const newTheme = theme === ColorTheme.LIGHT ? ColorTheme.DARK : ColorTheme.LIGHT
-    setTheme(newTheme)
-    Cookie.set(COLOR_THEME_COOKIE_NAME, newTheme, {
-      expires: 1000,
-    })
+  useEffect(() => {
+    global.window.__onThemeChange = setTheme
+  }, [])
 
-    if (newTheme === ColorTheme.DARK) {
-      document.documentElement.classList.add(ColorTheme.DARK)
-      document.documentElement.setAttribute('data-theme', ColorTheme.DARK)
-    } else {
-      document.documentElement.classList.remove(ColorTheme.DARK)
-      document.documentElement.setAttribute('data-theme', ColorTheme.LIGHT)
-    }
+  function handleToggleTheme() {
+    global.window?.__setPreferredTheme(theme === ColorTheme.LIGHT ? ColorTheme.DARK : ColorTheme.LIGHT)
   }
 
   return (

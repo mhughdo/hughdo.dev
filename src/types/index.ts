@@ -9,3 +9,11 @@ const ColorTheme = {
 export type ColorThemeType = (typeof ColorTheme)[keyof typeof ColorTheme]
 export { ColorTheme }
 export type PromiseFunctionType<T> = () => Promise<T>
+
+declare global {
+  interface Window {
+    __theme: ColorThemeType
+    __onThemeChange: (theme: ColorThemeType) => void
+    __setPreferredTheme: (theme: ColorThemeType) => void
+  }
+}
