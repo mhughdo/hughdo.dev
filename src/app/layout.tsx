@@ -85,8 +85,26 @@ export default function RootLayout({ children, modal }: { children: ReactNode; m
       <html
         lang='en'
         data-theme={theme}
+        suppressHydrationWarning
         className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, uncutSans.variable, robotoMono.variable)}>
         <body className='flex min-h-dvh flex-col justify-between bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
+          <script
+            id='set-color-theme'
+            dangerouslySetInnerHTML={{
+              __html: `
+              const theme = document.cookie.split(';').find((row) => row.startsWith('color-theme=')) || 'color-theme=dark'
+              const themeValue = theme.split('=')[1] === 'light' ? 'light' : 'dark'
+              if (themeValue !== document.documentElement.getAttribute('data-theme')) {
+                if (themeValue === 'dark') {
+                  document.documentElement.classList.add('dark')
+                } else {
+                  document.documentElement.classList.remove('dark')
+              }
+              document.documentElement.setAttribute('data-theme', themeValue)
+              }
+              `,
+            }}
+          />
           <LazyMotion>
             <Header initialTheme={theme} />
             <div className='flex-1'>{children}</div>
@@ -97,6 +115,7 @@ export default function RootLayout({ children, modal }: { children: ReactNode; m
           <Analytics />
         </body>
       </html>
+
       <AccessibilityCheck />
     </>
   )
