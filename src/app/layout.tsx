@@ -99,8 +99,8 @@ export default function RootLayout({ children, modal }: { children: ReactNode; m
                   document.documentElement.classList.add('dark')
                 } else {
                   document.documentElement.classList.remove('dark')
-              }
-              document.documentElement.setAttribute('data-theme', themeValue)
+                }
+                document.documentElement.setAttribute('data-theme', themeValue)
               }
               `,
             }}
