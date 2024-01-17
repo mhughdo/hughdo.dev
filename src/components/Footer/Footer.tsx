@@ -18,7 +18,7 @@ const socialLinks = [
   },
 ]
 
-const Footer = async () => {
+const Footer = () => {
   const categories = getCategories()
 
   return (
