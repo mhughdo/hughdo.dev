@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Cookie from 'js-cookie'
 
 import { SunMoon } from '@/components/Icons'
@@ -15,6 +15,15 @@ const DarkModeToggle = ({ initialTheme, size = 25 }: DarkModeToggleProps) => {
   const [theme, setTheme] = useState(initialTheme)
   const reverseTheme = theme === ColorTheme.LIGHT ? ColorTheme.DARK : ColorTheme.LIGHT
   const isDark = theme === ColorTheme.DARK
+
+  useEffect(() => {
+    const theme = document.documentElement.getAttribute('data-theme')
+    if (theme && theme === ColorTheme.DARK) {
+      setTheme(ColorTheme.DARK)
+    } else {
+      setTheme(ColorTheme.LIGHT)
+    }
+  }, [])
 
   function handleToggleTheme() {
     const newTheme = theme === ColorTheme.LIGHT ? ColorTheme.DARK : ColorTheme.LIGHT
