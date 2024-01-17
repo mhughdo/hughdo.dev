@@ -1,14 +1,15 @@
 import { notFound } from 'next/navigation'
 
 import MDX from '@/components/MDX'
-import { getPost } from '@/helpers'
+import { getPost, getPostsMetadata } from '@/helpers'
 
 export const dynamicParams = false
 export const revalidate = 3600
-// export async function generateStaticParams() {
-//   const postsMetadata = getPostsMetadata({ limit: -1 })
-//   return postsMetadata.map((post) => ({ slug: post.slug }))
-// }
+export const dynamic = 'force-static'
+export async function generateStaticParams() {
+  const postsMetadata = getPostsMetadata({ limit: -1 })
+  return postsMetadata.map((post) => ({ slug: post.slug }))
+}
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = getPost(params.slug)
