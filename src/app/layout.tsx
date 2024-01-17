@@ -3,14 +3,12 @@ import clsx from 'clsx'
 import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import localFont from 'next/font/local'
-import { cookies } from 'next/headers'
 
 import AccessibilityCheck from '@/components/AccessibilityCheck'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 import LazyMotion from '@/components/LazyMotion'
-import { COLOR_THEME_COOKIE_NAME } from '@/constants'
-import { ColorTheme, ColorThemeType } from '@/types'
+import { getTheme } from '@/utils/getTheme'
 
 import './globals.css'
 
@@ -77,36 +75,19 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
-  const savedTheme = cookies().get(COLOR_THEME_COOKIE_NAME)
-  const theme: ColorThemeType = savedTheme?.value === ColorTheme.LIGHT ? ColorTheme.LIGHT : ColorTheme.DARK
-
   return (
     <>
       <html
         lang='en'
-        data-theme={theme}
+        data-theme={'light'}
         suppressHydrationWarning
-        className={clsx({ [ColorTheme.DARK]: theme === ColorTheme.DARK }, uncutSans.variable, robotoMono.variable)}>
+        className={clsx(uncutSans.variable, robotoMono.variable)}>
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: getTheme }} />
+        </head>
         <body className='flex min-h-dvh flex-col justify-between bg-white font-sans antialiased transition duration-500 dark:bg-gray-900'>
-          <script
-            id='set-color-theme'
-            dangerouslySetInnerHTML={{
-              __html: `
-              const theme = document.cookie.split(';').find((row) => row.startsWith('color-theme=')) || 'color-theme=dark'
-              const themeValue = theme.split('=')[1] === 'light' ? 'light' : 'dark'
-              if (themeValue !== document.documentElement.getAttribute('data-theme')) {
-                if (themeValue === 'dark') {
-                  document.documentElement.classList.add('dark')
-                } else {
-                  document.documentElement.classList.remove('dark')
-                }
-                document.documentElement.setAttribute('data-theme', themeValue)
-              }
-              `,
-            }}
-          />
           <LazyMotion>
-            <Header initialTheme={theme} />
+            <Header />
             <div className='flex-1'>{children}</div>
             <Footer />
             {modal}
