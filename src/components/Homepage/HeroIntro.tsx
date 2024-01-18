@@ -48,7 +48,7 @@ const HeroIntro = ({ className }: HeroIntroProps) => {
           fill='none'
           viewBox='0 0 192 7'
           preserveAspectRatio='none'
-          className='h-10px md:top[24px] absolute bottom-0 left-0 right-0 top-[22px] -z-[1] min-w-[105%] lg:top-[26px]'>
+          className='md:top[24px] absolute bottom-0 left-0 right-0 top-[18px] -z-[1] h-[10px] min-w-[105%] lg:top-[26px]'>
           <MotionPath
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}
@@ -75,7 +75,7 @@ const HeroIntro = ({ className }: HeroIntroProps) => {
           fill='none'
           viewBox='0 0 114 7'
           preserveAspectRatio='none'
-          className='h-10px absolute bottom-0 left-0 right-0 top-[20px] -z-[1] min-w-[105%] md:top-[22px] lg:top-[26px]'>
+          className='absolute bottom-0 left-0 right-0 top-[18px] -z-[1] h-[10px] min-w-[105%] md:top-[22px] lg:top-[26px]'>
           <MotionPath
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 1 }}

@@ -125,7 +125,7 @@ export default {
         },
         'intro-line-width': {
           '0%': { opacity: '1' },
-          '100%': { width: 'calc(100% + var(--line-offset))', opacity: '0.3' },
+          '100%': { width: 'calc(100% + var(--horizontal-line-offset))', opacity: '0.3' },
         },
         'intro-line-height': {
           '0%': { opacity: '1' },

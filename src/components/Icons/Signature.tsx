@@ -1,5 +1,5 @@
 'use client'
-import { FC, SVGProps, useRef } from 'react'
+import { FC, SVGProps, useEffect, useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 
 import AccessibleIcon from '@/components/AccessibleIcon'
@@ -20,12 +20,20 @@ export type SignatureProps = SVGProps<SVGElement>
 const Signature: FC<SignatureProps> = ({ width = 90, height = 50 }) => {
   const ref = useRef<SVGSVGElement>(null)
   const isInView = useInView(ref)
+  const [animate, setAnimate] = useState(false)
+
+  // temporary fix for the signature animation happening multiple times
+  useEffect(() => {
+    if (isInView) {
+      setAnimate(true)
+    }
+  }, [isInView])
 
   return (
     <AccessibleIcon label='Signature'>
       <MotionSvg
         initial='hidden'
-        animate={isInView ? 'visible' : 'hidden'}
+        animate={animate ? 'visible' : 'hidden'}
         viewport={{ once: true }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         variants={svgVariants}
@@ -38,7 +46,7 @@ const Signature: FC<SignatureProps> = ({ width = 90, height = 50 }) => {
           <MotionPath
             fill='none'
             initial='hidden'
-            animate={isInView ? 'visible' : 'hidden'}
+            animate={animate ? 'visible' : 'hidden'}
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
             variants={pathVariants}
@@ -51,7 +59,7 @@ const Signature: FC<SignatureProps> = ({ width = 90, height = 50 }) => {
           <MotionPath
             fill='none'
             initial='hidden'
-            animate={isInView ? 'visible' : 'hidden'}
+            animate={animate ? 'visible' : 'hidden'}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.5, ease: 'easeInOut' }}
             variants={pathVariants}
@@ -64,7 +72,7 @@ const Signature: FC<SignatureProps> = ({ width = 90, height = 50 }) => {
           <MotionPath
             fill='none'
             initial='hidden'
-            animate={isInView ? 'visible' : 'hidden'}
+            animate={animate ? 'visible' : 'hidden'}
             viewport={{ once: true }}
             transition={{ delay: 0.5, duration: 1, ease: 'easeInOut' }}
             variants={pathVariants}
