@@ -306,6 +306,10 @@ input:-webkit-autofill:active {
   color-scheme: dark;
 }
 
+*:focus {
+  outline-color: var(--color-primary);
+}
+
 .dark {
   --color-background: var(--color-gray-900);
   --color-container-line: 255 255 255;
