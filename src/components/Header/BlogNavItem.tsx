@@ -15,7 +15,9 @@ type BlogNavItemProps = {
 const BlogNavItem: FC<BlogNavItemProps> = ({ name, href, categories }) => {
   return (
     <div>
-      <Link href={href}>{name}</Link>
+      <Link href={href} className='text-base font-medium'>
+        {name}
+      </Link>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger className='relative ml-1 align-middle'>
           <DropDownTrigger size='16' />
