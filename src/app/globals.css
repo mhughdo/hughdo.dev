@@ -30,6 +30,7 @@
     --hughdo-start-gradient: 67.3% 0.266 25.039656026515278;
     --hughdo-end-gradient: 85.82% 0.201 91.19;
     --line-offset: 75px;
+    --horizontal-line-offset: 32px;
     --line-gap: 5px;
     --line-width: 1px;
     --line-fade-stop: 93%;
@@ -41,9 +42,13 @@
     --line-a-delay-ultra: calc(var(--line-a-delay) + 0.4s);
     --line-a-easing: cubic-bezier(0.645, 0.045, 0.355, 1);
     --dotted-circle-size: 36px;
+    @media screen(md) {
+      --horizontal-line-offset: 75px;
+    }
     @media screen(lg) {
       --dotted-circle-size: 73px;
       --line-offset: 150px;
+      --horizontal-line-offset: 150px;
     }
   }
 }
