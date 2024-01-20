@@ -11,7 +11,7 @@
     "db-push": "drizzle-kit push:pg"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.495.0",
+    "@aws-sdk/client-s3": "^3.496.0",
     "@radix-ui/react-accessible-icon": "^1.0.3",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
@@ -43,7 +43,7 @@
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "autoprefixer": "^10.4.17",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.3.2",
     "drizzle-kit": "^0.20.13",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
