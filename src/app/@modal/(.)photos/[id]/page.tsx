@@ -12,6 +12,7 @@ export async function generateStaticParams() {
   return images.map((img) => ({ id: img.id.toString() }))
 }
 
+// TODO: close the modal when the viewport is small just like Behance
 const Page = async ({ params }: { params: { id: string } }) => {
   const { id } = params
   const image = await findImageById(+id)

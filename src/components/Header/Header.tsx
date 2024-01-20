@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import CommandPaletteToggle from '@/components/CommandPaletteToggle'
 import BlogNavItem from '@/components/Header/BlogNavItem'
+import MobileNav from '@/components/MobileNav'
 import { getCategories } from '@/helpers'
 
 const headerItems = [
@@ -13,7 +14,7 @@ const headerItems = [
   {
     name: 'Blog',
     href: '/category',
-    component: BlogNavItem,
+    component: BlogNavItem as typeof BlogNavItem,
   },
   {
     name: 'Photos',
@@ -33,7 +34,7 @@ const Header = async () => {
           <Link className='mr-8 text-xl' href='/'>
             <h1>Hugh Do</h1>
           </Link>
-          <nav className='hidden lg:block'>
+          <nav className='hidden md:block' aria-label='desktop navigation'>
             <ul className='text-secondary-color flex'>
               {headerItems.map((item) => {
                 return (
@@ -51,9 +52,12 @@ const Header = async () => {
             </ul>
           </nav>
         </div>
-        <div className='flex gap-4'>
+        <div className='hidden md:flex md:gap-4'>
           <CommandPaletteToggle />
           <DarkModeToggle />
+        </div>
+        <div className='block md:hidden'>
+          <MobileNav headerItems={headerItems} />
         </div>
       </header>
     </div>

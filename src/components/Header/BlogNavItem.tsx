@@ -1,5 +1,5 @@
 'use client'
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import Link from 'next/link'
 
@@ -12,14 +12,14 @@ type BlogNavItemProps = {
   categories: Category[]
 }
 
-const BlogNavItem: FC<BlogNavItemProps> = ({ name, href, categories }) => {
+const BlogNavItem: FC<BlogNavItemProps> = ({ name, href, categories }): ReactNode => {
   return (
     <div>
       <Link href={href} className='text-base font-medium'>
         {name}
       </Link>
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger className='relative ml-1 align-middle'>
+        <DropdownMenu.Trigger className='relative ml-1 align-middle' aria-label='View sub-navigation items'>
           <DropDownTrigger size='16' />
           {/* Increase the target size */}
           <span className='absolute inset-[-8px]' />
