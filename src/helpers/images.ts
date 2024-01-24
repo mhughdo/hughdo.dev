@@ -29,7 +29,7 @@ export const findImageByName = async (name: string) => {
 
 export const getImages = cache(async (options?: GetImagesOptions) => {
   let offset = 0
-  const { limit, page = 0, orderBy = [desc(images.modifyDate)] } = options || {}
+  const { limit = 12, page = 0, orderBy = [desc(images.modifyDate)] } = options || {}
   if (page > 0) {
     offset = page * imagesPerPage
   }
