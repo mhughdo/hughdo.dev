@@ -16,7 +16,7 @@ export type Frontmatter = {
   description: string
   isPublished: boolean
   publishedOn: string
-  updatedOn?: string
+  updatedOn: string
   categories: string[]
   meta: {
     keywords: string[]
