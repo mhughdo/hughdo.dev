@@ -40,6 +40,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       card: 'summary_large_image',
       title,
       description,
+      creator: '@hughdo',
       images: [ogImage],
     },
   }
@@ -65,7 +66,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
             '@type': 'BlogPosting',
             headline: frontmatter.title,
             datePublished: frontmatter.publishedOn,
-            dateModified: frontmatter.publishedOn,
+            dateModified: frontmatter.updatedOn || frontmatter.publishedOn,
             description: frontmatter.description,
             image: frontmatter.image
               ? `https://hughdo.dev${frontmatter.image}`
