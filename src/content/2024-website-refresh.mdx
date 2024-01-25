@@ -18,7 +18,7 @@ meta:
     - mdx
 bannerPath: /hughdo.dev/content/blog/2024-website-refresh/reactjs-logo.png
 bannerAlt: React Logo
-updatedOn: '2024-01-25T11:00:17.314Z'
+updatedOn: '2024-01-25T13:18:47.927Z'
 ---
 
 <Image
@@ -54,15 +54,15 @@ Here's the tech stack
 
 ### Next.js
 
-I've been using Next.js since forever so it's a no brainer for me to use it for the website rebuild. The only reason I used Gatsby.js for the first version of my website was because Next.js didn't have Static Site Generation (SSG) at the time. But that feature has been added to Next.js since version 9.3.
+I've been using Next.js since forever so it's a no brainer for me to use it for the website rebuild. The only reason I used Gatsby.js for the first version of my website was because Next.js didn't have Static Site Generation (SSG) at that time. But that feature has been added to Next.js since version 9.3.
 
 Especially, with the latest version of Next.js (v14), everything is [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components) by default which can help reduce the bundle size significantly and improve the performance of the website.
 
-#### OG Image generation and Sitemap
+#### OG Image and Sitemap generation
 
-Next.js provides [generateMetadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) and [generateSitemaps](https://nextjs.org/docs/app/api-reference/functions/generate-sitemaps) which can be used to generate website's metadata including OG Image and Sitemap dynamically.
+Next.js provides [generateMetadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) and [generateSitemaps](https://nextjs.org/docs/app/api-reference/functions/generate-sitemaps) functions which can be used to generate website's metadata including OG Image and Sitemap dynamically.
 
-I create a [Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) to dynamically generate OG Images for each page. The API basically just adds the provided title to a template image and returns the generated image.
+I create a [Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) to dynamically generate OG Images for each blog post page. The API basically just adds the provided title to a template image and returns the generated image.
 
 Here's the template image created by my personal, beautiful, awesome designer, a.k.a. my girlfriend:
 
@@ -154,6 +154,7 @@ import NightOwlLightNoItalics from "./NightOwlLightNoItalics.json";
 Code.theme = {
   light: NightOwlLightNoItalics,
   dark: MaterialThemePaleNight,
+  // render light or dark theme based on the data-theme attribute of the html tag
   lightSelector: 'html[data-theme="light"]',
 };
 
@@ -181,19 +182,19 @@ However, there're a few problems with CSS-in-JS libraries:
 
 The latest CSS-in-JS library [StyleX](https://stylexjs.com/) that powers all the Meta sites: Facebook, Instagram, WhatsApp and Threads solves the first problem. But still, it doesn't solve other problems.
 
-With Tailwind CSS, you also need to spend some time to learn the ulitity classes and syntax. But the process is much easier and faster. Time for styling your components is reduced significantly. Tailwind uses a compilier to generate only classes that you use. This means only classes used will be included in the final single CSS file.
+With Tailwind CSS, you also need to spend some time to learn the ulitity classes and syntax. But the process is much easier and faster. Time for styling your components is reduced significantly. Tailwind uses a compilier to generate only classes that you use, other unused classes will be removed in the output CSS file. So, you don't have to worry about the bundle size.
 
 To be honest, I didn't like Tailwind CSS at first because I think it's ugly. But after using it for a while, I've grown to love it. So if you have the same feeling as me, give it a try and you might like it.
 
 ### Image Storage and CDN
 
-I've taken a look at several image storage sevices like [Cloudinary](https://cloudinary.com/), [Cloudflare Images](https://www.cloudflare.com/) and [Imgix](https://imgix.com/). The problem with Cloudinary is that It doesn't allow you to upload images larger than 10MB on free plan. Most of my photos exceed that size. As for Cloudflare Images, It doesn't allow you to get the original image back, It will always return the processed images.
+I've taken a look at several image storage sevices like [Cloudinary](https://cloudinary.com/), [Cloudflare Images](https://www.cloudflare.com/) and [Imgix](https://imgix.com/). The problem with Cloudinary is that It doesn't allow you to upload images larger than 10MB on free plan and most of my photos exceed that size. As for Cloudflare Images, It doesn't allow you to get the original image back, It will always return the processed images.
 
-Imgix's free plan can serve 1000 unique images and 100GB of bandwidth per month which is more than enough for me. It also provides the option to get the original image. So I decided to go with Imgix. However, with Imgix, you have to upload your images to your own storage like AWS S3 or Google Cloud Storage. I chose AWS S3 because It offers a free tier for 12 months and after that, It's still very cheap.
+Imgix's free plan can serve 1000 unique images and offers 100GB of bandwidth per month which is more than enough for me. It also provides the option to get the original image so I decided to go with Imgix. However, with Imgix, you have to upload your images to your own storage like AWS S3 or Google Cloud Storage. I chose AWS S3 because It offers a free tier for 12 months and after that, It's still very cheap.
 
 ### Radix Primitives
 
-Radix Primitives is a React component library that provides you with the unstyled, accessible building blocks to build your own design system. I use this library for some of the components like **Dialog**, **Button** and **Dropdown Menu**. It's easy to use, accessible by default, and can be styled easily with Tailwind CSS.
+Radix Primitives is a React component library that provides you with the unstyled, accessible building blocks to build your own design system. I use this library for some of the components like **Dialog**, **Button** and **Dropdown Menu**. It's easy to use, accessible by default, and can be styled with Tailwind CSS.
 
 One of the cool things about Radix Primitives is that you don't have install the whole library, just install the components that you need.
 
