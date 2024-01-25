@@ -222,12 +222,14 @@
   margin: 0;
   margin-bottom: 1.33333em;
   &:last-of-type {
-    margin-top: 0;
+    margin-bottom: 0;
   }
 }
 
 .prose img {
-  @apply m-0;
+  margin: 0;
+  margin-bottom: 1.33333em;
+  /* @apply -mx-4 mx-auto block md:-mx-8 lg:-mx-12; */
 }
 
 .prose h2,
