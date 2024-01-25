@@ -19,3 +19,12 @@ export const promisePool = async <T>(functions: PromiseFunctionType<T>[], n: num
   await Promise.all(promises)
   return result
 }
+
+export const toHumanReadableDate = (date: string) => {
+  const humanReadableDate = new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+  return humanReadableDate
+}

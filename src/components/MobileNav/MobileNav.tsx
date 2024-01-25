@@ -2,7 +2,6 @@
 import { FC, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import clsx from 'clsx'
-import { AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
 import DarkModeToggle from '@/components/DarkModeToggle'
@@ -47,31 +46,29 @@ const MobileHeader: FC<MobileHeaderProps> = ({ headerItems }) => {
               <nav className='flex h-full flex-col justify-between' aria-label='mobile navigation'>
                 {
                   <div className='text-primary'>
-                    <AnimatePresence>
-                      {headerItems.map((item, idx) => {
-                        return (
-                          <MotionDiv
-                            key={item.name}
-                            variants={variants}
-                            initial='closed'
-                            animate={isMenuOpen ? 'open' : 'closed'}
-                            transition={{
-                              type: 'spring',
-                              stiffness: 680,
-                              damping: isMenuOpen ? 60 : 20,
-                              mass: 1,
-                              delay: idx * 0.2,
-                            }}>
-                            <Link
-                              className='block p-4 pl-8 text-3xl font-medium'
-                              href={item.href}
-                              onClick={() => setIsMenuOpen(false)}>
-                              {item.name}
-                            </Link>
-                          </MotionDiv>
-                        )
-                      })}
-                    </AnimatePresence>
+                    {headerItems.map((item, idx) => {
+                      return (
+                        <MotionDiv
+                          key={item.name}
+                          variants={variants}
+                          initial='closed'
+                          animate={isMenuOpen ? 'open' : 'closed'}
+                          transition={{
+                            type: 'spring',
+                            stiffness: 680,
+                            damping: isMenuOpen ? 60 : 20,
+                            mass: 1,
+                            delay: idx * 0.2,
+                          }}>
+                          <Link
+                            className='block p-4 pl-8 text-3xl font-medium'
+                            href={item.href}
+                            onClick={() => setIsMenuOpen(false)}>
+                            {item.name}
+                          </Link>
+                        </MotionDiv>
+                      )
+                    })}
                   </div>
                 }
                 <div className='pl-8'>

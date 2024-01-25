@@ -3,7 +3,7 @@ import { getCategories, getPostsMetadata } from '@/helpers'
 export default async function sitemap() {
   let posts = getPostsMetadata().map((post) => ({
     url: `https://hughdo.dev/blog/${post.slug}`,
-    lastModified: post.frontmatter.updatedOn,
+    lastModified: post.frontmatter.updatedOn || post.frontmatter.publishedOn,
   }))
 
   const categoryRoutes = getCategories().map((category) => `/category/${category}`)
