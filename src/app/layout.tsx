@@ -20,23 +20,6 @@ const uncutSans = localFont({
   adjustFontFallback: false,
 })
 
-const robotoMono = localFont({
-  src: [
-    {
-      path: '../fonts/RobotoMono-Regular.woff2',
-      style: 'normal',
-      weight: '400',
-    },
-    {
-      path: '../fonts/RobotoMono-SemiBold.woff2',
-      style: 'semibold',
-      weight: '600',
-    },
-  ],
-  display: 'swap',
-  variable: '--font-roboto-mono',
-})
-
 const SpeedInsights = dynamic(() => import('../components/VercelSpeedInsights').then((mod) => mod.default))
 const Analytics = dynamic(() => import('../components/VercelAnalytics').then((mod) => mod.default))
 
@@ -77,11 +60,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, modal }: { children: ReactNode; modal: ReactNode }) {
   return (
     <>
-      <html
-        lang='en'
-        data-theme={'light'}
-        suppressHydrationWarning
-        className={clsx(uncutSans.variable, robotoMono.variable)}>
+      <html lang='en' data-theme={'light'} suppressHydrationWarning className={clsx(uncutSans.variable)}>
         <head>
           <script dangerouslySetInnerHTML={{ __html: getTheme }} />
         </head>

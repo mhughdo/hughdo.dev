@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import localFont from 'next/font/local'
 import { notFound } from 'next/navigation'
 
 import MDX from '@/components/MDX'
@@ -44,6 +46,23 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
+const robotoMono = localFont({
+  src: [
+    {
+      path: '../../../fonts/RobotoMono-Regular.woff2',
+      style: 'normal',
+      weight: '400',
+    },
+    {
+      path: '../../../fonts/RobotoMono-SemiBold.woff2',
+      style: 'semibold',
+      weight: '600',
+    },
+  ],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+})
+
 const Page = ({ params }: { params: { slug: string } }) => {
   const { slug } = params
   const post = getPost(slug)
@@ -83,7 +102,11 @@ const Page = ({ params }: { params: { slug: string } }) => {
         </h1>
         <p className='text-secondary-color mt-1 text-center text-sm'>{metadata.humanReadableDate}</p>
       </div>
-      <main className='blog-wrapper text-primary-color prose-quoteless md:prose-md prose prose-neutral dark:prose-invert'>
+      <main
+        className={clsx(
+          'blog-wrapper text-primary-color prose-quoteless md:prose-md prose prose-neutral dark:prose-invert',
+          robotoMono.variable
+        )}>
         <MDX source={content} />
         <div className='pt-8'>
           <div className='text-secondary-color text-xs font-medium uppercase'>Last updated</div>
