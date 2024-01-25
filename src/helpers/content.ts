@@ -5,6 +5,7 @@ import path from 'path'
 
 import { CATEGORIES } from '@/helpers/category'
 import { GrayMatterFile, MdxFile, Options, Post, PostMetadata } from '@/types'
+import { toHumanReadableDate } from '@/utils'
 
 import 'server-only'
 
@@ -51,13 +52,12 @@ const getMdxFilesMetadata = (options?: Options): PostMetadata[] => {
 }
 
 const getMdxFileMetadata = (mdxFile: MdxFile): PostMetadata => {
-  const humanReadableDate = new Date(mdxFile.grayMatterFile.data.publishedOn).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+  const updatedOn = mdxFile.grayMatterFile.data.updatedOn || mdxFile.grayMatterFile.data.publishedOn
+  const humanReadableDate = toHumanReadableDate(mdxFile.grayMatterFile.data.publishedOn)
+  const humanReadableUpdateDate = toHumanReadableDate(updatedOn)
   return {
     humanReadableDate,
+    humanReadableUpdateDate,
     slug: mdxFile.slug,
     pathname: mdxFile.pathname,
     frontmatter: mdxFile.grayMatterFile.data,

@@ -16,7 +16,7 @@ export type Frontmatter = {
   description: string
   isPublished: boolean
   publishedOn: string
-  updatedOn: string
+  updatedOn?: string
   categories: string[]
   meta: {
     keywords: string[]
@@ -35,6 +35,7 @@ export type PostMetadata = {
   pathname: string
   slug: string
   humanReadableDate: string
+  humanReadableUpdateDate: string
   frontmatter: Frontmatter
 }
 

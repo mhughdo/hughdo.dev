@@ -68,7 +68,7 @@ function RoundedImage(props: ComponentPropsWithRef<'img'>) {
     throw new Error('Image must have src, alt, width, and height props passed to it.')
   }
 
-  return <Image alt={alt} className='rounded-lg' src={src} {...rest} />
+  return <Image alt={alt} className='rounded-lg' src={src} {...rest} width={+width} height={+height} />
 }
 
 export { CustomLink, Headings, RoundedImage }

@@ -1,13 +1,13 @@
+import clsx from 'clsx'
+import localFont from 'next/font/local'
 import { notFound } from 'next/navigation'
 
 import MDX from '@/components/MDX'
 import { getPost, getPostsMetadata } from '@/helpers'
 
-export const dynamicParams = false
 export const revalidate = 3600
-export const dynamic = 'force-static'
 export async function generateStaticParams() {
-  const postsMetadata = getPostsMetadata({ limit: -1 })
+  const postsMetadata = getPostsMetadata()
   return postsMetadata.map((post) => ({ slug: post.slug }))
 }
 
@@ -40,10 +40,28 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       card: 'summary_large_image',
       title,
       description,
+      creator: '@hughdo',
       images: [ogImage],
     },
   }
 }
+
+const robotoMono = localFont({
+  src: [
+    {
+      path: '../../../fonts/RobotoMono-Regular.woff2',
+      style: 'normal',
+      weight: '400',
+    },
+    {
+      path: '../../../fonts/RobotoMono-SemiBold.woff2',
+      style: 'semibold',
+      weight: '600',
+    },
+  ],
+  display: 'swap',
+  variable: '--font-roboto-mono',
+})
 
 const Page = ({ params }: { params: { slug: string } }) => {
   const { slug } = params
@@ -65,7 +83,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
             '@type': 'BlogPosting',
             headline: frontmatter.title,
             datePublished: frontmatter.publishedOn,
-            dateModified: frontmatter.publishedOn,
+            dateModified: frontmatter.updatedOn || frontmatter.publishedOn,
             description: frontmatter.description,
             image: frontmatter.image
               ? `https://hughdo.dev${frontmatter.image}`
@@ -84,8 +102,16 @@ const Page = ({ params }: { params: { slug: string } }) => {
         </h1>
         <p className='text-secondary-color mt-1 text-center text-sm'>{metadata.humanReadableDate}</p>
       </div>
-      <main className='blog-wrapper text-primary-color prose-quoteless prose prose-neutral dark:prose-invert md:prose-lg'>
+      <main
+        className={clsx(
+          'blog-wrapper text-primary-color prose-quoteless md:prose-md prose prose-neutral dark:prose-invert',
+          robotoMono.variable
+        )}>
         <MDX source={content} />
+        <div className='pt-8'>
+          <div className='text-secondary-color text-xs font-medium uppercase'>Last updated</div>
+          <div className='text-primary-color'>{metadata.humanReadableUpdateDate}</div>
+        </div>
       </main>
     </div>
   )

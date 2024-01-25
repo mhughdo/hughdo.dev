@@ -1,0 +1,228 @@
+---
+title: 2024 Website Refresh
+seoTitle: 2024 Website Refresh
+description: >-
+  A few years ago, I've built my first personal website using Gatsby.js. After
+  finishing building it, I realized that I didn't have enough time to write nor
+  did I have many ideas to write about. So, I decided to just leave it there to
+  collect dust.
+isPublished: true
+publishedOn: 2024-01-25T00:00:00.000Z
+categories:
+  - general
+meta:
+  keywords:
+    - website refresh
+    - nextjs
+    - tailwindcss
+    - mdx
+bannerPath: /hughdo.dev/content/blog/2024-website-refresh/reactjs-logo.png
+bannerAlt: React Logo
+updatedOn: '2024-01-25T11:00:17.314Z'
+---
+
+<Image
+  alt="React.js logo"
+  src="/hughdo.dev/content/blog/2024-website-refresh/reactjs-logo.png"
+  width={2048}
+  height={2048}
+/>
+
+A few years ago, I've built [my first personal website](https://github.com/mhughdo/hughdo.dev-v0) using [Gatsby.js](https://www.gatsbyjs.com/). After finishing building it, I realized that I didn't have enough time to write nor did I have many ideas to write about. So, I decided to just leave it there to collect dust.
+
+Now, since I've been learning a lot and gaining a ton of inspiration from other developers, I think it's time to refresh my website and start writing again. Addtionally, I want to have a place where I can share my photos I've taken with high quality. In this blog, I will talk about the tech stack that I've chosen to build my new website.
+
+## Aims
+
+Here's what I wanted with my new website:
+
+1. Have a modern look.
+2. Minimal (but doesn't have to be too minimal): Use as few dependencies as possible. Easy to maintain, scale; easy to write and publish new content.
+3. Can display high quality photos.
+
+## Tech Stack
+
+Here's the tech stack
+
+- Framework: [Next.js](https://nextjs.org/)
+- Hosting: [Vercel](https://vercel.com/)
+- Styling: [Tailwind CSS](https://tailwindcss.com/)
+- Content rednering: [Next MDX Remote](https://github.com/hashicorp/next-mdx-remote)
+- Components: [Radix Primitives](https://www.radix-ui.com/primitives)
+- Image storage: [AWS S3](https://aws.amazon.com/s3/)
+- Image CDN: [Imgix](https://imgix.com/)
+
+### Next.js
+
+I've been using Next.js since forever so it's a no brainer for me to use it for the website rebuild. The only reason I used Gatsby.js for the first version of my website was because Next.js didn't have Static Site Generation (SSG) at the time. But that feature has been added to Next.js since version 9.3.
+
+Especially, with the latest version of Next.js (v14), everything is [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components) by default which can help reduce the bundle size significantly and improve the performance of the website.
+
+#### OG Image generation and Sitemap
+
+Next.js provides [generateMetadata](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) and [generateSitemaps](https://nextjs.org/docs/app/api-reference/functions/generate-sitemaps) which can be used to generate website's metadata including OG Image and Sitemap dynamically.
+
+I create a [Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) to dynamically generate OG Images for each page. The API basically just adds the provided title to a template image and returns the generated image.
+
+Here's the template image created by my personal, beautiful, awesome designer, a.k.a. my girlfriend:
+
+<Image
+  alt="React.js logo"
+  src="/hughdo.dev/content/blog/2024-website-refresh/og-bg.png"
+  width={1920}
+  height={1080}
+/>
+
+And here's the code to generate the OG Image:
+
+```ts
+import { ImageResponse } from 'next/og'
+import { NextRequest } from 'next/server'
+
+export const runtime = 'edge'
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const postTitle = searchParams.get('title')
+  const font = fetch(
+    new URL('../../../public/fonts/UncutSans-Regular.otf', import.meta.url)
+  ).then((res) => res.arrayBuffer())
+  const fontData = await font
+  const imgUrl =
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000/og-bg.png'
+      : 'https://hughdo.dev/og-bg.png'
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          height: '100%',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          backgroundImage: `url(${imgUrl})`,
+        }}>
+        <div
+          style={{
+            marginLeft: 190,
+            marginRight: 190,
+            display: 'flex',
+            fontSize: 120,
+            fontFamily: 'Uncut Sans',
+            letterSpacing: '-0.05em',
+            fontStyle: 'normal',
+            color: 'white',
+            lineHeight: '160px',
+            whiteSpace: 'pre-wrap',
+          }}>
+          {postTitle}
+        </div>
+      </div>
+    ),
+    {
+      width: 1920,
+      height: 1080,
+      fonts: [
+        {
+          name: 'Uncut Sans',
+          data: fontData,
+          style: 'normal',
+        },
+      ],
+    }
+  )
+}
+```
+
+You can try it out by going to this URL: [https://hughdo.dev/og?title=Hello%20World](https://hughdo.dev/og?title=Hello%20World)
+
+#### Code hightlighting
+
+I use [Bright](https://bright.codehike.org/) for code hightlighting. It's fast, lightweight and easy to use, customize. It supports [React Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components) and all of the VSCode themes so you can use your favorite theme for code hightlighting.
+
+It also supports Dark Mode out of the box. Here's how I render different themes for light and dark mode:
+
+```tsx
+import { FC, ReactNode } from "react";
+import { Code } from "bright";
+
+import MaterialThemePaleNight from "./MaterialThemePaleNight.json";
+import NightOwlLightNoItalics from "./NightOwlLightNoItalics.json";
+Code.theme = {
+  light: NightOwlLightNoItalics,
+  dark: MaterialThemePaleNight,
+  lightSelector: 'html[data-theme="light"]',
+};
+
+type CustomCodeProps = {
+  children: ReactNode;
+};
+
+const CustomCode: FC<CustomCodeProps> = (props) => {
+  return <Code lang="js" lineNumbers {...props} />;
+};
+
+export default CustomCode;
+```
+
+### Tailwind CSS
+
+Nowadays, there're a lot of ways available to style your website. You can use CSS-in-JS, CSS modules, CSS preprocessors, etc. I've used serveral CSS-in-JS libraries like [Emotion](https://emotion.sh/docs/introduction) or [Styled Components](https://styled-components.com/) before and I think they're great.
+
+However, there're a few problems with CSS-in-JS libraries:
+
+1. Most of them are not compatible with the new [Next.js App Router](https://nextjs.org/docs/app) and are runtime CSS-in-JS libraries. This means they come with a cost of performance.
+2. The learning curve is quite steep. You have to learn a new syntax and a new way to style your components.
+3. You have to write a lot of CSS code to style your components.
+4. Naming your CSS classes is hard.
+
+The latest CSS-in-JS library [StyleX](https://stylexjs.com/) that powers all the Meta sites: Facebook, Instagram, WhatsApp and Threads solves the first problem. But still, it doesn't solve other problems.
+
+With Tailwind CSS, you also need to spend some time to learn the ulitity classes and syntax. But the process is much easier and faster. Time for styling your components is reduced significantly. Tailwind uses a compilier to generate only classes that you use. This means only classes used will be included in the final single CSS file.
+
+To be honest, I didn't like Tailwind CSS at first because I think it's ugly. But after using it for a while, I've grown to love it. So if you have the same feeling as me, give it a try and you might like it.
+
+### Image Storage and CDN
+
+I've taken a look at several image storage sevices like [Cloudinary](https://cloudinary.com/), [Cloudflare Images](https://www.cloudflare.com/) and [Imgix](https://imgix.com/). The problem with Cloudinary is that It doesn't allow you to upload images larger than 10MB on free plan. Most of my photos exceed that size. As for Cloudflare Images, It doesn't allow you to get the original image back, It will always return the processed images.
+
+Imgix's free plan can serve 1000 unique images and 100GB of bandwidth per month which is more than enough for me. It also provides the option to get the original image. So I decided to go with Imgix. However, with Imgix, you have to upload your images to your own storage like AWS S3 or Google Cloud Storage. I chose AWS S3 because It offers a free tier for 12 months and after that, It's still very cheap.
+
+### Radix Primitives
+
+Radix Primitives is a React component library that provides you with the unstyled, accessible building blocks to build your own design system. I use this library for some of the components like **Dialog**, **Button** and **Dropdown Menu**. It's easy to use, accessible by default, and can be styled easily with Tailwind CSS.
+
+One of the cool things about Radix Primitives is that you don't have install the whole library, just install the components that you need.
+
+### Database and Caching
+
+I use [Vercel PostgreSQL](https://vercel.com/docs/storage/vercel-postgres) for the databse to store images' metadata like Url, description, camera-related information, etc.
+
+For the database ORM, I use [Drizzle ORM](https://orm.drizzle.team/). It's a type-safe, fast ORM.
+
+<blockquote>
+  "Well, actually it's not that Drizzle is fast, Drizzle just doesn't slow you
+  down."
+</blockquote>
+
+I also use [Vercel KV](https://vercel.com/docs/storage/vercel-kv) for caching the DB's query results. Because I don't frequently upload new images so there's no need to hit the database often.
+
+### Content Management
+
+I use [MDX](https://mdxjs.com/) to write my blog posts. MDX lets you use any React components in your markdown content. It means that you can write and use your own components like code playground to make your content more interactive and dynamic. For compiling MDX to HTML, I use [Next MDX Remote](https://github.com/hashicorp/next-mdx-remote).
+
+## Conclusion
+
+There're still a lot of things that I'd to add to my website like:
+
+- Code Playground
+- Better image gallery
+- Better mobile nav menu
+- Fixing accessibility issues
+
+But if I keep waiting for everything to be perfect, I'll never be able to publish any blog post. So I'll just publish this post and keep improving my website.
+
+Finally, My website will be [open source](https://github.com/mhughdo/hughdo.dev). Feel free to hack around and give me feedbacks.
