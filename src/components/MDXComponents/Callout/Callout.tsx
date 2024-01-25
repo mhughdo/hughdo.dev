@@ -36,13 +36,9 @@ const Callout: FC<CalloutProps> = ({ variant = 'info', children, label }) => {
   const Icon = ICONS[variant]
 
   return (
-    <aside
-      className={clsx(
-        bgColor[variant],
-        'text-primary-color callout relative my-10 rounded-md p-6 transition-colors duration-300 ease-in-out'
-      )}>
+    <aside className={clsx(bgColor[variant], 'text-primary-color callout relative my-10 rounded-md p-6')}>
       {!label && (
-        <div className='absolute right-[-24px] top-[-24px] rounded-lg bg-primary p-1.5 transition-colors duration-300 ease-in-out has-[svg.info-icon]:right-[-16px] has-[svg.info-icon]:top-[-16px] has-[svg.info-icon]:rounded-full'>
+        <div className='absolute right-[-24px] top-[-24px] rounded-lg bg-primary p-1.5 has-[svg.info-icon]:right-[-16px] has-[svg.info-icon]:top-[-16px] has-[svg.info-icon]:rounded-full'>
           <Icon.Component size='32' className={Icon.className} />
         </div>
       )}
