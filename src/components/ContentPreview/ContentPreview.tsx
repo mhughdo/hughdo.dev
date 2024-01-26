@@ -14,10 +14,10 @@ const ContentPreview: FC<ContentPreviewProps> = ({ postMetadata }) => {
 
   return (
     <Link href={pathname}>
-      <article className='text-primary-color group relative cursor-pointer rounded-2xl border bg-zinc-50/20 p-4 drop-shadow-md transition duration-500 hover:relative hover:z-10 hover:scale-110 dark:border-0 dark:bg-gray-800'>
+      <article className='text-primary-color group relative flex h-full cursor-pointer flex-col rounded-2xl border bg-zinc-50/20 p-4 drop-shadow-md transition duration-500 hover:relative hover:z-10 hover:scale-110 dark:border-0 dark:bg-gray-800'>
         <h3 className='text-lg font-semibold group-hover:text-primary'>{title}</h3>
-        <p className='mt-4 text-sm'>{description} </p>
-        <div className='mt-4 flex items-center text-xs font-semibold'>
+        <p className='my-4 text-sm'>{description} </p>
+        <div className='mt-auto flex items-center text-xs font-semibold'>
           <span>Read more</span>
           <Arrow
             className='transform transition duration-500 group-hover:translate-x-2 group-hover:text-primary'
