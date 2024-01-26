@@ -17,15 +17,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     return
   }
 
-  const { seoTitle: title, publishedOn: publishedTime, description, image } = post.metadata.frontmatter
+  const { title, seoTitle, publishedOn: publishedTime, description, image } = post.metadata.frontmatter
   const keywords = post.metadata.frontmatter.meta.keywords || []
   const ogImage = image ? `https://hughdo.dev${image}` : `https://hughdo.dev/og?title=${title}`
   return {
-    title,
+    title: seoTitle,
     description,
     ...(keywords.length > 0 && { keywords }),
     openGraph: {
-      title,
+      title: seoTitle,
       description,
       type: 'article',
       publishedTime,
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: seoTitle,
       description,
       creator: '@hughdo',
       images: [ogImage],
