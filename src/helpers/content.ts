@@ -84,6 +84,9 @@ const getMdxFiles = (options?: Options): MdxFile[] => {
   const dirFiles = fs.readdirSync(dir)
 
   dirFiles.forEach((file) => {
+    if (limit && mdxFiles.length >= limit) {
+      return
+    }
     const filePath = path.join(dir, file)
 
     if (file.endsWith('.mdx')) {
@@ -104,11 +107,13 @@ const getMdxFiles = (options?: Options): MdxFile[] => {
       const slug = file.replace(/\.mdx?$/, '')
       const pathname = `/blog/${slug}`
       mdxFiles.push({ pathname, slug, grayMatterFile: data })
-      if (limit && mdxFiles.length >= limit) {
-        return mdxFiles
-      }
     }
   })
 
-  return mdxFiles
+  return mdxFiles.toSorted((a, b) => {
+    if (new Date(a.grayMatterFile.data.publishedOn) > new Date(b.grayMatterFile.data.publishedOn)) {
+      return -1
+    }
+    return 1
+  })
 }

@@ -186,12 +186,13 @@
     }
     span {
       padding-right: 0.5em;
+      transform: translate(0, 5px);
     }
     div {
       flex: 1;
     }
     display: flex;
-    align-items: center;
+    align-items: flex-start;
   }
 }
 
