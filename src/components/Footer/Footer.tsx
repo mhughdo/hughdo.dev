@@ -56,7 +56,7 @@ const Footer = async () => {
           </div>
         </div>
         <div className='mt-10 block md:hidden'>
-          <span className='text-secondary-color text-sm'>© 2024 Hugh Do —— Tokyo</span>
+          <span className='text-secondary-color text-sm'>© 2024 Hugh Do — Tokyo</span>
         </div>
       </div>
     </footer>

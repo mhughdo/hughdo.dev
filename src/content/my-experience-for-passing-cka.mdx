@@ -1,0 +1,78 @@
+---
+title: My experience and tips for the CKA exam
+seoTitle: >-
+  My experience and study tips for passing the Certified Kubernetes
+  Administrator (CKA) exam
+description: >-
+  Recently, I've passed the Certified Kubernetes Administrator (CKA) exam. I've
+  been working with Kubernetes a lot for the past year so I thought it would be
+  a good idea to test my knowledge and get certified.
+isPublished: true
+publishedOn: 2024-01-26T00:00:00.000Z
+categories:
+  - kubernetes
+meta:
+  keywords:
+    - cka exam
+    - certified kubernetes administrator
+    - experience
+    - study tips
+bannerPath: /hughdo.dev/content/blog/cka-experience/k8s.png
+bannerAlt: Kubernetes image
+updatedOn: '2024-01-26T15:34:39.749Z'
+---
+
+<Image
+  alt="My CKA certificate"
+  src="/hughdo.dev/content/blog/cka-experience/cert.png"
+  width={3439}
+  height={2662}
+/>
+
+Recently, I've passed the Certified Kubernetes Administrator (CKA) exam. I've been working with Kubernetes a lot for the past year so I thought it would be a good idea to test my knowledge and get certified. In this post, I'll share my experience and tips for passing the exam before I completely forget about it.
+
+Personally, I didn't have any issues the PSI Secure Browser, the environment check was also seamless (~10 mins) so I don't have anything to complain about like a lot of people on Reddit. My score was 89% and I finished the exam in 1 hour 40 mins.
+
+## About the exam
+
+- This is an online, proctored, performance-based exam. You'll be monitored by a proctor via webcam and microphone.
+- You'll be given 2 hours to complete the exam containing 17 questions. The passing score is 66%.
+- You'll have 2 attempts to pass the exam.
+
+## Prepare for the exam
+
+### Course
+
+The only course I took is [Mumshad Mannambeth's CKA course](https://kodekloud.com/courses/certified-kubernetes-administrator-cka/). This course is very comprehensive and covers everything you need to know for the exam. It contains some chapters for the basics so don't worry if you've already forgotten some of the concepts.
+
+It took me about 1.5 weeks to finish the course because for the lessons that I'm already familiar with, I just skimmed through them at 2x speed. I also skipped the labs because I thought doing the mock exams would be enough and I was right.
+
+### Mock exam
+
+I took 2-3 [Kodekloud CKA](https://kodekloud.com/courses/ultimate-certified-kubernetes-administrator-cka-mock-exam/) mock exams first and then [Killer.sh CKA's](https://killer.sh/cka) mock exams.
+
+In my opinion, the Kodekloud mock exams' difficulty is on par with the real exam. The Killer.sh mock exams are a lot harder. Well, not actually harder, they're just longer: There're more requirements for each question and the number of questions is also higher.
+
+<Callout>
+  Don't worry if you can't finish the Killer.sh mock exams in time; I couldn't
+  either. On my first attempt, I only got ~60% because I also needed to get used
+  to the environment.
+</Callout>
+
+### Tips
+
+Finally, here are some tips that I think would be helpful for you:
+
+1. You don't need to follow Killer.sh's tips for setting up the aliases and vim. Vim works perfectly fine out of the box and <InlineCode>alias k=kubectl</InlineCode> is already set up for you. The only alias I think would be helpful is <InlineCode>alias do="--dry-run=client -o yaml --image"</InlineCode>.
+2. Don't spend too much time on a question. If you're stuck, move on to the next one and come back later.
+3. Use <InlineCode>Ctrl + R</InlineCode> to search for a command in your shell history. It will save you a lot of time if you want to run some commands again.
+4. Practice Killer.sh's mock exams until you become completely comfortable with the environment because the PSI Exam environment looks the same.
+5. Check carefully if you've done what the question asked for correctly, the question could be quite tricky. For example, use the `kubectl auth can-i` command to check if you've given the correct permissions to a user/serviceaccount.
+6. Although you can go to the related docs by clicking on the links in the questions, make sure you're familiar with them so you don't have to waste time looking for the right section. You can quickly find the example manifest file by searching <InlineCode>Kind: abc</InlineCode> in the docs.
+7. Use imperative commands whenever possible instead of creating yaml files for creating resources. It will save you a lot of time. For example, use <InlineCode>kubectl create deployment sample-deployment --image=busybox --replicas=2 </InlineCode> to create <InlineCode>Deployment</InlineCode>. You can refer to [Kubectl Reference Docs](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands) for the list of imperative commands.
+8. The hard questions are usually about ETCD backup/restore and cluster upgrade.
+9. If you encounter **permission denied** error, run <InlineCode>sudo -i</InlineCode> to become root and run the command again. I got this error and spent quite a lot of time trying to figure out why because I was just doing exactly what the question told me to do. In the later question, the `sudo -i` command was mentioned in the description.
+
+## Closing thought
+
+The CKA exam is not too hard, so if you fully understand the solutions of the Killer.sh's mock exam questions, you should be fine.
