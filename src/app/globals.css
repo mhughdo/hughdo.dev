@@ -127,7 +127,7 @@
 }
 
 .prose .anchor {
-  @apply invisible absolute no-underline;
+  @apply pointer-events-none invisible absolute hidden no-underline md:pointer-events-auto md:block;
 
   margin-left: -1em;
   width: 80%;
@@ -236,7 +236,7 @@
 .prose h2,
 h3,
 h4 {
-  @apply font-medium tracking-tighter !important;
+  @apply font-medium !important;
 }
 
 .prose strong {
@@ -384,7 +384,7 @@ h4,
 h5,
 h6 {
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: none;
 }
 
 #root,
