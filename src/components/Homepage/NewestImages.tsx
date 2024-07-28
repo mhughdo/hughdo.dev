@@ -40,7 +40,7 @@ const NewestImages = async () => {
           href='/photos'
           className='text-primary-color hover:text-secondary-color relative rounded-full border border-zinc-500 bg-secondary p-2.5 text-sm hover:bg-zinc-100 dark:border-gray-600 dark:hover:bg-gray-800'>
           See more
-          <div className='pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr from-indigo-600 via-violet-500 to-amber-600  opacity-40 blur-lg' />
+          <div className='pointer-events-none absolute inset-0 -z-10 bg-gradient-to-tr from-indigo-600 via-violet-500 to-amber-600 opacity-40 blur-lg' />
         </Link>
       </div>
     </div>
