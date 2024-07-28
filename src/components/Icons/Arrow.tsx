@@ -11,7 +11,7 @@ const Arrow = ({ width, height, className }: ArrowProps) => {
   return (
     <AccessibleIcon label='Arrow'>
       <svg
-        className={clsx(className, '-rotate-90 ')}
+        className={clsx(className, '-rotate-90')}
         width={width}
         height={height}
         viewBox='0 0 32 32'

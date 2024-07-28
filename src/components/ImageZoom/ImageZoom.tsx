@@ -39,7 +39,7 @@ const ImageZoom: FC<ImageZoomProps> = ({ image }) => {
           blurDataURL={image.blurDataURL!}
           className='rounded-md object-cover'
         />
-        <div className='absolute right-0 top-0 p-4 opacity-0 transition-opacity duration-300 group-hover:md:opacity-100 '>
+        <div className='absolute right-0 top-0 p-4 opacity-0 transition-opacity duration-300 group-hover:md:opacity-100'>
           <ZoomIn width={24} height={24} />
         </div>
       </button>
@@ -59,7 +59,7 @@ const ImageZoom: FC<ImageZoomProps> = ({ image }) => {
                   blurDataURL={image.blurDataURL!}
                   className='rounded-md object-cover align-middle'
                 />
-                <div className='absolute right-0 top-0 p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 '>
+                <div className='absolute right-0 top-0 p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100'>
                   <ZoomOut width={24} height={24} />
                 </div>
               </button>
