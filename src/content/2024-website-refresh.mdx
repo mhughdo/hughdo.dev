@@ -18,7 +18,7 @@ meta:
     - mdx
 bannerPath: /hughdo.dev/content/blog/2024-website-refresh/reactjs-logo.png
 bannerAlt: React Logo
-updatedOn: '2024-01-27T04:40:26.946Z'
+updatedOn: "2024-01-27T04:40:26.946Z"
 ---
 
 <Image
@@ -64,16 +64,7 @@ Next.js provides [generateMetadata](https://nextjs.org/docs/app/api-reference/fu
 
 I create a [Route Handlers](https://nextjs.org/docs/app/building-your-application/routing/route-handlers) to dynamically generate the OG Image for each blog post page. The API basically just adds the provided title to a template image and returns the generated image.
 
-Here's the template image created by my personal, beautiful, awesome designer, a.k.a. my girlfriend:
-
-<Image
-  alt="React.js logo"
-  src="/hughdo.dev/content/blog/2024-website-refresh/og-bg.png"
-  width={1920}
-  height={1080}
-/>
-
-And here's the code to generate the OG Image:
+Here's the code to generate the OG Image:
 
 ```ts
 import { ImageResponse } from 'next/og'
