@@ -1,10 +1,8 @@
 {
-  "id": "562493e3-9a21-4c42-864d-28b34a0a008e",
-  "prevId": "326eefa0-7d9c-4883-9542-a6afabcb845d",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "images": {
+    "public.images": {
       "name": "images",
       "schema": "",
       "columns": {
@@ -85,11 +83,19 @@
       },
       "indexes": {
         "name_idx": {
-          "name": "name_idx",
           "columns": [
-            "name"
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
           ],
-          "isUnique": false
+          "with": {},
+          "name": "name_idx",
+          "isUnique": false,
+          "method": "btree",
+          "concurrently": false
         }
       },
       "foreignKeys": {},
@@ -100,8 +106,11 @@
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "562493e3-9a21-4c42-864d-28b34a0a008e",
+  "prevId": "326eefa0-7d9c-4883-9542-a6afabcb845d",
+  "sequences": {}
 }
