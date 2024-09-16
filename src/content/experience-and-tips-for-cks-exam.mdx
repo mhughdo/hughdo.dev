@@ -1,0 +1,89 @@
+---
+title: My experience and tips for passing the CKS exam in 2 weeks
+seoTitle: My experience and tips for passing the Certified Kubernetes Security Specialist (CKS) exam in 2 weeks
+description: >-
+  A quick post about my experience and tips for passing the Certified Kubernetes Security Specialist (CKS) exam to mark my return to blogging.
+isPublished: true
+publishedOn: 2024-09-16T00:00:00.000Z
+categories:
+  - kubernetes
+meta:
+  keywords:
+    - cks exam 2024
+    - certified kubernetes security specialist
+    - experience
+    - study tips
+bannerPath: /hughdo.dev/content/blog/cks-experience/ship.png
+bannerAlt: Ship image
+updatedOn: 2024-09-16T00:00:00.000Z
+---
+
+<Image
+  alt="My CKS certificate"
+  src="/hughdo.dev/content/blog/cks-experience/cks-cert.png"
+  width={1239}
+  height={958}
+/>
+
+It's been a while since I've rebuilt my blog and posted first posts (more than 8 months to be exact lol). I've been busy with so many things: work, personal life, and hobbies. However, I'm having more free time now so I'll try to blog more consistently (at least not once every a few months). Let's start with a quick post about my experience and tips for passing the Certified Kubernetes Security Specialist (CKS) exam.
+
+I got my CKS certificate at the beginning of September 2024, just before some new changes are to the exam. You can check out the changes [here](https://training.linuxfoundation.org/cks-program-changes/).
+
+<Callout variant="danger">
+  The most significant changes, in my opinion are **Implement Pod-to-Pod
+  encryption using Cilium** and **Understand your supply chain (e.g. SBOM,
+  CI/CD, artifact repositories)** which are not covered in the course mentioned
+  below so you'll need to study them on your own. The rest of the changes are
+  just minor.
+</Callout>
+
+## About the Exam
+
+- Prerequisites: You must be a Certified Kubernetes Administrator (CKA) to take the CKS exam.
+- Like the CKA exam, you'll be given 2 hours to complete the exam containing around 16 questions. The passing score is **67%**.
+
+## Exam preparation
+
+### Main resources
+
+In the first week, I spent 2 hours a day studying [Killer Shell's CKS course](https://www.youtube.com/watch?v=d9xfB5qaOfg) which you can access for free on YouTube. This course is very comprehensive and covers almost everything you need to know for the exam (**~96%**, I think).
+
+In the second week, I completed all the [Killer Shell's CKS scenarios](https://killercoda.com/killer-shell-cks) and the free 2-attempt mock exam which is included when you register for the exam. All of them are free, but let's show some support to the creator and subscribe to the [https://killercoda.com](https://killercoda.com) for at least one month which is only $10/month - something I did.
+
+<Callout>
+  Don't worry if you can't finish the mock exam in time. Just make sure you
+  understand all the questions/solutions and have enough practice with the
+  scenarios.
+</Callout>
+
+### Links I Found Useful
+
+1. [Network Policy Playground](https://editor.networkpolicy.io/?id=ItJY4KVxBrb56TVm)
+2. [The Rego Playground](https://play.openpolicyagent.org/)
+3. [Walidshaari's Certified-Kubernetes-Security-Specialist repo](https://github.com/walidshaari/Certified-Kubernetes-Security-Specialist)
+
+### Questions Not Covered in the Course
+
+I encountered a few questions that were not covered in the course but I still managed to do them because I read about those questions in the comment section of the course.
+
+1. Passing some flags to the Kubelet via the systemd unit file: the unit file is located at <InlineCode>/etc/systemd/system/kubelet.service.d/10-kubeadm.conf</InlineCode>. You'll need to modify the ExecStart line to include the flags and restart the kubelet service.
+2. Changing the tls cipher suites for the kube-apiserver and etcd components to secure the communication between them: the question will ask something like "Only keep the ciphers that are higher than TLS1.2 and add one more cipher to the list". You just need to add one cipher the question asks for (it's <InlineCode>TLS_RSA_WITH_AES_128_CBC_SHA256</InlineCode> in my case) to the list of ciphers in the kube-apiserver and etcd manifest files. The flag is <InlineCode>--tls-cipher-suites</InlineCode> for the kube-apiserver and <InlineCode>--cipher-suites</InlineCode> for etcd.
+
+## Experience
+
+I had no issue doing the environment check but unlike the last time, I was unable to connect to the remote desktop environment provided by PSI Secure Browser. I constantly hit the **Retry** button for a few minutes and It only worked after I reached out to the proctor. If you're having the same issue, don't waste your time, just hit the **Request break** button and ask for help.
+
+People say that the CKS exam is very tough, but in my opinion, it's not crazy hard; it's just very easy to make mistakes. So make sure you double-check your solutions before moving on; it won't take much time.
+
+## Tips
+
+There are a lot of useful little tips in the course and scenarios. It's not possible to list them all here so I'll just list some of the most important ones, you can also check out the tips I shared in my [CKA post](/blog/experience-and-tips-for-cka-exam):
+
+1. Make sure you're familiar with the [Kubernetes documentation](https://kubernetes.io/docs/) to know where to find things quickly, especially documents about Network Policies, Ingress, Audit Logging, RBAC, Admission Controllers and Pod Security Standards, etc. You should be familiar with the <InlineCode>kubectl</InlineCode> to create resources like Secret, Deployment, Role, RoleBinding, etc., as well.
+2. Expect not to be able to solve all the questions in the exam. Be sure that the solutions you've done are correct to increase your chance of passing.
+3. The question I could only solve partially was the manual review of the Dockerfile and Deployment manifest files. The question gives you a very long Dockerfile and asks you to change some instructions to make it more secure. Maybe you could solve this question by using static analysis tools like Kubesec which is not installed in the exam environment. It's easier for the Deployment manifest file: just make sure the deployment doesn't run as root and has no additional capabilities.
+4. You can quickly check for High/Critical vulnerabilities in a Docker image by using this command: <InlineCode>trivy image image-name | grep -E "(High|Critical)"</InlineCode>
+
+## Conclusion
+
+Compared to the CKA exam, I learned a lot more from the CKS exam. Hope you have fun learning and good luck with your exam!
