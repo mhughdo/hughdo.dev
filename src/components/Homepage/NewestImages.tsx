@@ -1,8 +1,9 @@
 import clsx from 'clsx'
-import Image from 'next/image'
 import Link from 'next/link'
 
 import { getImages } from '@/helpers'
+
+import { ImageCard, LayoutGrid } from './HomePageImageGrid'
 
 const gridCols = [
   'col-span-full md:col-start-1 md:col-end-5',
@@ -15,27 +16,18 @@ const gridCols = [
 
 const NewestImages = async () => {
   const imageList = await getImages({ limit: 6 })
+  const cards = imageList.map((image, index) => ({
+    id: image.id,
+    className: clsx(`${gridCols[index]}`, 'h-96'),
+    src: image.key,
+    blurDataURL: image.blurDataURL,
+  })) as ImageCard[]
 
   return (
     <div>
       <div className='text-md font-medium uppercase tracking-wider text-secondary'>Newest images</div>
-      <div className='mt-6 grid grid-cols-1 gap-6 md:grid-cols-12'>
-        {imageList.map((image, index) => (
-          <div key={image.id} className={clsx(`${gridCols[index]}`, 'relative h-96')}>
-            <Image
-              src={image.key}
-              alt='one of the newest images'
-              placeholder='blur'
-              blurDataURL={image.blurDataURL!}
-              quality={90}
-              fill
-              sizes='(min-width: 768px) 33vw, 100vw'
-              className='rounded-md object-cover object-center'
-            />
-          </div>
-        ))}
-      </div>
-      <div className='mx-auto mt-12 w-max'>
+      <LayoutGrid cards={cards} />
+      <div className='mx-auto mt-8 w-max'>
         <Link
           href='/photos'
           className='text-primary-color hover:text-secondary-color relative rounded-full border border-zinc-500 bg-secondary p-2.5 text-sm hover:bg-zinc-100 dark:border-gray-600 dark:hover:bg-gray-800'>

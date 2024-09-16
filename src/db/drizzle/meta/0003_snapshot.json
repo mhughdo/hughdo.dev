@@ -1,4 +1,6 @@
 {
+  "id": "b3d0c1e0-fe23-4293-b245-abbf186f5413",
+  "prevId": "075f0f3a-e995-4632-9223-05919b3b8311",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -9,7 +11,7 @@
         "id": {
           "name": "id",
           "type": "serial",
-          "primaryKey": false,
+          "primaryKey": true,
           "notNull": true
         },
         "created_at": {
@@ -35,7 +37,7 @@
         "name": {
           "name": "name",
           "type": "text",
-          "primaryKey": true,
+          "primaryKey": false,
           "notNull": true
         },
         "type": {
@@ -83,6 +85,7 @@
       },
       "indexes": {
         "name_idx": {
+          "name": "name_idx",
           "columns": [
             {
               "expression": "name",
@@ -91,26 +94,38 @@
               "nulls": "last"
             }
           ],
-          "with": {},
-          "name": "name_idx",
           "isUnique": false,
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "images_id_unique": {
+          "name": "images_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "images_name_unique": {
+          "name": "images_name_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "name"
+          ]
+        }
+      }
     }
   },
   "enums": {},
   "schemas": {},
+  "sequences": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "id": "075f0f3a-e995-4632-9223-05919b3b8311",
-  "prevId": "562493e3-9a21-4c42-864d-28b34a0a008e",
-  "sequences": {}
+    "tables": {}
+  }
 }

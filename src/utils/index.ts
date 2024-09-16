@@ -1,3 +1,6 @@
+import { ClassValue, clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
 import { PromiseFunctionType } from '@/types'
 
 export * from './blurhash'
@@ -27,4 +30,8 @@ export const toHumanReadableDate = (date: string) => {
     day: 'numeric',
   })
   return humanReadableDate
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }
