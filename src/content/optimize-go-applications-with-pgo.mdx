@@ -1,0 +1,539 @@
+---
+title: Optimize Go applications with Profile-Guided Optimization
+seoTitle: Optimize performance of Go applications with Profile-Guided Optimization (PGO)
+description: >-
+  Profile-guided optimization is a compiler optimization technique where the runtime profiling data is fed back to the compiler to optimize the subsequent build. Let's see how we can use PGO to boost the performance of Go applications.
+isPublished: true
+publishedOn: 2024-10-03T00:00:00.000Z
+categories:
+  - go
+  - performance
+meta:
+  keywords:
+    - performance
+    - pgo
+    - profile guided optimization
+    - compiler
+    - golang
+bannerPath: /hughdo.dev/content/blog/optimize-go-applications-with-pgo/thumbnail.png
+bannerAlt: Golang mascot
+updatedOn: "2024-10-03T00:00:00.000Z"
+---
+
+<Image
+  alt="Golang mascot"
+  src="/hughdo.dev/content/blog/optimize-go-applications-with-pgo/thumbnail.png"
+  width={2688}
+  height={1792}
+/>
+[Profile-guided optimization (PGO)](https://go.dev/doc/pgo) is a compiler
+optimization technique where the runtime profiling data is fed back to the
+compiler to optimize the subsequent build. According to the Go documentation,
+PGO can improve the performance of Go applications by around 2-14% but it may be
+improved in the future. Let's see how we can use PGO to optimize the performance
+of Go applications.
+
+Compiler uses serveral optimization mechanisms to generate efficient machine code such as escape analysis, dead code elimination, constant folding, inlining, and many more. However, it only uses heuristics to decide which optimizations to apply; it doesn't have any information about which code paths are hot or cold; or which functions are called more frequently.
+
+## How can PGO help?
+
+PGO uses **inlining**. Inlining is a optimization technique where the compiler replaces a function call with the actual function body. This can eliminate the function call overhead and can lead to faster execution time.
+Why inlining can make the code run faster? Let's see what happens when the CPU executes a function call:
+
+1. Save the return address/link register and framer pointer/base pointer of the caller function to the stack.
+2. Adjusts the stack pointer to allocate space for the function's local variables and possible return values.
+3. Push the arguments to registers (or stack if they don't fit in registers).
+4. Save the base pointer of the caller function and set the base pointer to the current stack frame.
+5. Execute the function's code and save the return values to the stack/registers.
+6. Restore the frame pointer/base pointer and set the program counter to the return address/link register.
+7. Perform the cleanup (pop the arguments from the stack, adjust the stack pointer, etc).
+
+As you can see, it could be costly if the function is small and called frequently. However, there's a limitation to this optimization technique. The compiler can't inline every function, as it can lead to performance degradation:
+
+- Increased binary size: The same code can be inlined multiple times which make the binary size increase.
+- More CPU cache misses: The CPU's instruction cache is limited in size so it can only fetch a limited number of instructions at a time. The bigger the code size, the more cache misses will occur.
+- More stack usage: Inlining can sometimes increase the stack memory usage if the inlined code contains large local variables or complex control flow.
+
+By providing the information about how the application is being used and which functions are hot, the compiler can
+efficiently choose which functions to inline, resulting in better performance.
+
+## How to use PGO
+
+First, make sure your application is built using Go v1.20 or later as it's only supported in these versions. To enable PGO, you just need to follow these 3 simple steps:
+
+1. Import and enable profiling: You can use either <InlineCode>runtime/pprof</InlineCode> or <InlineCode>net/http/pprof</InlineCode>.
+2. Collect a pprof CPU profile: If you're using <InlineCode>net/http/pprof</InlineCode>, after building and running the application, you can collect the profile by using this command:
+
+```shell
+  curl 'http://localhost:6060/debug/pprof/profile?seconds=600' -o default.pgo
+```
+
+<Callout>
+  To archive the best result, you should collect profiles with a workload
+  running in a production environment at different times then merge them
+  together.
+</Callout>
+
+2. Use the profile: PGO is automatically enabled when there's a **default.pgo** file in the current directory. Alternatively, you can specify the profile path using the <InlineCode>-pgo</InlineCode> flag.
+
+## See how it works in action
+
+I've prepared a simple Go application containing a ChatGPT-generated compute-heavy function:
+
+```go main.go
+package main
+
+import (
+	"fmt"
+	"log"
+	"math/rand/v2"
+	"net/http"
+	_ "net/http/pprof"
+	"sort"
+	"time"
+)
+
+func taskHandler(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	result := computeHeavyTask()
+	duration := time.Since(start)
+
+	fmt.Fprintf(w, "Result: %d\n", result)
+	fmt.Fprintf(w, "Duration: %s\n", duration)
+}
+
+func computeHeavyTask() int64 {
+	// Generate a large slice of random numbers
+	size := 20_000_000
+	numbers := make([]int, size)
+	for i := 0; i < size; i++ {
+		numbers[i] = rand.IntN(1000000) // Random numbers between 0 and 999999
+	}
+
+	// Sort the numbers
+	sort.Ints(numbers)
+
+	// Perform some calculations on the sorted list
+	var sum int64
+	for i, num := range numbers {
+		sum += int64(num) * int64(i%100)
+		if i%1000 == 0 {
+			sum = (sum * 31) % (1 << 32) // Some arbitrary operation to prevent optimization
+		}
+	}
+
+	return sum
+}
+
+func main() {
+	log.Println("Starting server on :6060")
+	http.HandleFunc("/task", taskHandler)
+	log.Fatal(http.ListenAndServe(":6060", nil))
+}
+```
+
+I've also wrote a simple k6 script to simulate the workload:
+
+```javascript
+import http from "k6/http";
+import { check, sleep } from "k6";
+
+export const options = {
+  vus: 50,
+  duration: "300s",
+};
+
+export default function () {
+  const res = http.get("http://localhost:6060/task");
+
+  check(res, {
+    "status is 200": (r) => r.status === 200,
+  });
+
+  sleep(1);
+}
+```
+
+Now let's run the neccessary commands to build, run the application and check the result:
+
+1. Build the application without PGO: <InlineCode>go build -pgo=off -gcflags=-m=2 -o main-wo-pgo main.go</InlineCode>. Note that we're using <InlineCode>-gcflags=-m=2</InlineCode> to see the optimizations that the compiler is applying (which functions are inlined and which are not).
+
+2. Run the application, k6 script and collect the profile (each in a separate terminal):
+
+```shell
+./main-wo-pgo
+k6 run script.js
+curl 'http://localhost:6060/debug/pprof/profile?seconds=300' -o default.pgo
+```
+
+3. Build the application with PGO: <InlineCode>go build -pgo=default.pgo -gcflags=-m=2 -o main-w-pgo main.go</InlineCode>.
+
+Looking at the logs from the first and the second build, you can see that the compiler inlined the computeHeavyTask function in the second build:
+
+```go
+// !diff -
+./main.go:22:6: cannot inline computeHeavyTask: function too complex: cost 201 exceeds budget 80
+// !diff +
+./main.go:22:6: can inline computeHeavyTask with cost 452 as: func() int64 { size := 20000000; numbers := make([]int, size); for loop; sort.Ints(numbers); sum = <nil>; for loop; return sum }
+// !diff -
+./main.go:13:6: cannot inline taskHandler: function too complex: cost 322 exceeds budget 80
+// !diff +
+./main.go:13:6: cannot inline taskHandler: function too complex: cost 717 exceeds budget 80
+./main.go:45:6: cannot inline main: function too complex: cost 280 exceeds budget 80
+// !diff +
+./main.go:15:28: inlining call to computeHeavyTask
+./main.go:27:25: inlining call to rand.IntN
+./main.go:31:11: inlining call to sort.Ints
+./main.go:27:25: inlining call to rand.(*Rand).IntN
+./main.go:46:13: inlining call to log.Println
+./main.go:48:31: inlining call to http.ListenAndServe
+...
+```
+
+<Callout>
+  The inlining budget is a numerical limit that the Go compiler uses to
+  determine whether a function is small enough to be inlined. Each function is
+  assigned a "cost," and if this cost is below the budget threshold, the
+  function may be inlined. The default budget is
+  [80](https://github.com/golang/go/blob/go1.23.2/src/cmd/compile/internal/inline/inl.go#L48).
+  If the profile data indicates that a function is hot, then the budget is
+  [increased to
+  2000](https://github.com/golang/go/blob/go1.23.2/src/cmd/compile/internal/inline/inl.go#L81).
+  The cost is calculated not only based on the size of the function, but the
+  compiler also considers the complexity of the function, such as loops,
+  branches, and calls to other functions. Functions that have too many branches
+  or call other expensive functions are less likely to be inlined.
+</Callout>
+
+## Take a deeper look deeper at the compiled binary
+
+I've used the <InlineCode>go tool objdump</InlineCode> to disassemble the compiled binaries to see the human-readable representation of the machine code. The flowwing is the output of the <InlineCode>taskHandler</InlineCode> function <InlineCode>main-wo-pgo</InlineCode> and <InlineCode>main-w-pgo</InlineCode> binaries:
+
+```go
+// main-without-pgo
+TEXT main.taskHandler(SB) /Users/hughdo/Desktop/test/go-pgo/main.go
+  main.go:13		0x100247320		f9400b90		MOVD 16(R28), R16
+  main.go:13		0x100247324		d10043f1		SUB $16, RSP, R17
+  main.go:13		0x100247328		eb10023f		CMP R16, R17
+  main.go:13		0x10024732c		54000ce9		BLS 103(PC)
+  main.go:13		0x100247330		f8170ffe		MOVD.W R30, -144(RSP)
+  main.go:13		0x100247334		f81f83fd		MOVD R29, -8(RSP)
+  main.go:13		0x100247338		d10023fd		SUB $8, RSP, R29
+  main.go:18		0x10024733c		f9004fe0		MOVD R0, 152(RSP)
+  main.go:18		0x100247340		f90053e1		MOVD R1, 160(RSP)
+  main.go:14		0x100247344		97f9bbf7		CALL time.Now(SB)
+  main.go:14		0x100247348		f90033e0		MOVD R0, 96(RSP)
+  main.go:14		0x10024734c		f9002fe1		MOVD R1, 88(RSP)
+  main.go:14		0x100247350		f90043e2		MOVD R2, 128(RSP)
+  // !mark
+  main.go:15		0x100247354		94000067		CALL main.computeHeavyTask(SB)
+  main.go:15		0x100247358		f90027e0		MOVD R0, 72(RSP)
+  main.go:16		0x10024735c		f9402fe1		MOVD 88(RSP), R1
+  main.go:16		0x100247360		f94043e2		MOVD 128(RSP), R2
+  main.go:16		0x100247364		f94033e0		MOVD 96(RSP), R0
+  main.go:16		0x100247368		97f9a06a		CALL time.Since(SB)
+  main.go:16		0x10024736c		f9002be0		MOVD R0, 80(RSP)
+  main.go:18		0x100247370		f9404fe1		MOVD 152(RSP), R1
+  main.go:18		0x100247374		b4000101		CBZ R1, 8(PC)
+  main.go:18		0x100247378		f9400422		MOVD 8(R1), R2
+  main.go:18		0x10024737c		d00015e3		ADRP 2875392(PC), R3
+  main.go:18		0x100247380		91288063		ADD $2592, R3, R3
+  main.go:18		0x100247384		c8dffc64		LDAR (R3), R4
+  main.go:18		0x100247388		b9401025		MOVWU 16(R1), R5
+  main.go:18		0x10024738c		f9400086		MOVD (R4), R6
+  main.go:18		0x100247390		1400003d		JMP 61(PC)
+  main.go:18		0x100247394		f9003fe1		MOVD R1, 120(RSP)
+  main.go:18		0x100247398		a906ffff		STP (ZR, ZR), 104(RSP)
+  main.go:18		0x10024739c		f94027e0		MOVD 72(RSP), R0
+  main.go:18		0x1002473a0		97f88b60		CALL runtime.convT64(SB)
+  main.go:18		0x1002473a4		90000541		ADRP 688128(PC), R1
+  main.go:18		0x1002473a8		91010021		ADD $64, R1, R1
+  main.go:18		0x1002473ac		f90037e1		MOVD R1, 104(RSP)
+  main.go:18		0x1002473b0		f9003be0		MOVD R0, 112(RSP)
+  main.go:18		0x1002473b4		f9403fe0		MOVD 120(RSP), R0
+  main.go:18		0x1002473b8		f94053e1		MOVD 160(RSP), R1
+  main.go:18		0x1002473bc		d0000002		ADRP 8192(PC), R2
+  main.go:18		0x1002473c0		91111042		ADD $1092, R2, R2
+  main.go:18		0x1002473c4		d2800163		MOVD $11, R3
+  main.go:18		0x1002473c8		9101a3e4		ADD $104, RSP, R4
+  main.go:18		0x1002473cc		b24003e5		ORR $1, ZR, R5
+  main.go:18		0x1002473d0		aa0503e6		MOVD R5, R6
+  main.go:18		0x1002473d4		97f9efdb		CALL fmt.Fprintf(SB)
+  main.go:19		0x1002473d8		f9404fe0		MOVD 152(RSP), R0
+  main.go:19		0x1002473dc		b4000100		CBZ R0, 8(PC)
+  main.go:19		0x1002473e0		f9400401		MOVD 8(R0), R1
+  main.go:19		0x1002473e4		d00015e2		ADRP 2875392(PC), R2
+  main.go:19		0x1002473e8		91290042		ADD $2624, R2, R2
+  main.go:19		0x1002473ec		c8dffc43		LDAR (R2), R3
+  main.go:19		0x1002473f0		b9401004		MOVWU 16(R0), R4
+  main.go:19		0x1002473f4		f9400065		MOVD (R3), R5
+  main.go:19		0x1002473f8		14000015		JMP 21(PC)
+  main.go:19		0x1002473fc		f9003fe0		MOVD R0, 120(RSP)
+  main.go:19		0x100247400		a906ffff		STP (ZR, ZR), 104(RSP)
+  main.go:19		0x100247404		f9402be0		MOVD 80(RSP), R0
+  main.go:19		0x100247408		97f88b46		CALL runtime.convT64(SB)
+  main.go:19		0x10024740c		b0000761		ADRP 970752(PC), R1
+  main.go:19		0x100247410		912b0021		ADD $2752, R1, R1
+  main.go:19		0x100247414		f90037e1		MOVD R1, 104(RSP)
+  main.go:19		0x100247418		f9003be0		MOVD R0, 112(RSP)
+  main.go:19		0x10024741c		f9403fe0		MOVD 120(RSP), R0
+  main.go:19		0x100247420		f94053e1		MOVD 160(RSP), R1
+  main.go:19		0x100247424		d0000002		ADRP 8192(PC), R2
+  main.go:19		0x100247428		9139a442		ADD $3689, R2, R2
+  main.go:19		0x10024742c		d28001a3		MOVD $13, R3
+  main.go:19		0x100247430		9101a3e4		ADD $104, RSP, R4
+  main.go:19		0x100247434		b24003e5		ORR $1, ZR, R5
+  main.go:19		0x100247438		aa0503e6		MOVD R5, R6
+  main.go:19		0x10024743c		97f9efc1		CALL fmt.Fprintf(SB)
+  main.go:20		0x100247440		a97ffbfd		LDP -8(RSP), (R29, R30)
+  main.go:20		0x100247444		910243ff		ADD $144, RSP, RSP
+  main.go:20		0x100247448		d65f03c0		RET
+  main.go:19		0x10024744c		8a050086		AND R5, R4, R6
+  main.go:19		0x100247450		d37cecc6		LSL $4, R6, R6
+  main.go:19		0x100247454		910020c6		ADD $8, R6, R6
+  main.go:19		0x100247458		f8666867		MOVD (R3)(R6), R7
+  main.go:19		0x10024745c		8b060066		ADD R6, R3, R6
+  main.go:19		0x100247460		eb0100ff		CMP R1, R7
+  main.go:19		0x100247464		540000c0		BEQ 6(PC)
+  main.go:19		0x100247468		91000484		ADD $1, R4, R4
+  main.go:19		0x10024746c		b5ffff07		CBNZ R7, -8(PC)
+  main.go:19		0x100247470		aa0203e0		MOVD R2, R0
+  main.go:19		0x100247474		97f70ab3		CALL runtime.typeAssert(SB)
+  main.go:19		0x100247478		17ffffe1		JMP -31(PC)
+  main.go:19		0x10024747c		f94004c0		MOVD 8(R6), R0
+  main.go:19		0x100247480		17ffffdf		JMP -33(PC)
+  main.go:18		0x100247484		8a0600a7		AND R6, R5, R7
+  main.go:18		0x100247488		d37cece7		LSL $4, R7, R7
+  main.go:18		0x10024748c		910020e7		ADD $8, R7, R7
+  main.go:18		0x100247490		f8676888		MOVD (R4)(R7), R8
+  main.go:18		0x100247494		8b070087		ADD R7, R4, R7
+  main.go:18		0x100247498		eb02011f		CMP R2, R8
+  main.go:18		0x10024749c		54000100		BEQ 8(PC)
+  main.go:18		0x1002474a0		910004a5		ADD $1, R5, R5
+  main.go:18		0x1002474a4		b5ffff08		CBNZ R8, -8(PC)
+  main.go:18		0x1002474a8		aa0303e0		MOVD R3, R0
+  main.go:18		0x1002474ac		aa0203e1		MOVD R2, R1
+  main.go:18		0x1002474b0		97f70aa4		CALL runtime.typeAssert(SB)
+  main.go:18		0x1002474b4		aa0003e1		MOVD R0, R1
+  main.go:18		0x1002474b8		17ffffb7		JMP -73(PC)
+  main.go:18		0x1002474bc		f94004e2		MOVD 8(R7), R2
+  main.go:18		0x1002474c0		aa0203e1		MOVD R2, R1
+  main.go:18		0x1002474c4		17ffffb4		JMP -76(PC)
+  main.go:13		0x1002474c8		f90007e0		MOVD R0, 8(RSP)
+  main.go:13		0x1002474cc		f9000be1		MOVD R1, 16(RSP)
+  main.go:13		0x1002474d0		f9000fe2		MOVD R2, 24(RSP)
+  main.go:13		0x1002474d4		aa1e03e3		MOVD R30, R3
+  main.go:13		0x1002474d8		97f8b98a		CALL runtime.morestack_noctxt.abi0(SB)
+  main.go:13		0x1002474dc		f94007e0		MOVD 8(RSP), R0
+  main.go:13		0x1002474e0		f9400be1		MOVD 16(RSP), R1
+  main.go:13		0x1002474e4		f9400fe2		MOVD 24(RSP), R2
+  main.go:13		0x1002474e8		17ffff8e		JMP main.taskHandler(SB)
+  main.go:13		0x1002474ec		00000000		?
+```
+
+```go
+// main-with-pgo
+TEXT main.taskHandler(SB) /Users/hughdo/Desktop/test/go-pgo/main.go
+  main.go:13		0x100247350		f9400b90		MOVD 16(R28), R16
+  main.go:13		0x100247354		d10083f1		SUB $32, RSP, R17
+  main.go:13		0x100247358		eb10023f		CMP R16, R17
+  main.go:13		0x10024735c		540014e9		BLS 167(PC)
+  main.go:13		0x100247360		f8160ffe		MOVD.W R30, -160(RSP)
+  main.go:13		0x100247364		f81f83fd		MOVD R29, -8(RSP)
+  main.go:13		0x100247368		d10023fd		SUB $8, RSP, R29
+  main.go:26		0x10024736c		f9005be1		MOVD R1, 176(RSP)
+  main.go:26		0x100247370		f90057e0		MOVD R0, 168(RSP)
+  main.go:14		0x100247374		97f9bc4b		CALL time.Now(SB)
+  main.go:14		0x100247378		f90037e0		MOVD R0, 104(RSP)
+  main.go:14		0x10024737c		f90033e1		MOVD R1, 96(RSP)
+  main.go:14		0x100247380		f90043e2		MOVD R2, 128(RSP)
+  main.go:25		0x100247384		90000540		ADRP 688128(PC), R0
+  main.go:25		0x100247388		91030000		ADD $192, R0, R0
+  // !mark(1:3)
+  main.go:25		0x10024738c		d285a001		MOVD $11520, R1
+  main.go:25		0x100247390		f2a02621		MOVK $(305<<16), R1
+  main.go:25		0x100247394		aa0103e2		MOVD R1, R2
+  main.go:25		0x100247398		97f8a972		CALL runtime.makeslice(SB)
+  main.go:25		0x10024739c		f9003fe0		MOVD R0, 120(RSP)
+  main.go:25		0x1002473a0		aa1f03e1		MOVD ZR, R1
+  main.go:26		0x1002473a4		1400000a		JMP 10(PC)
+  main.go:26		0x1002473a8		f9002be1		MOVD R1, 80(RSP)
+  main.go:27		0x1002473ac		d2884800		MOVD $16960, R0
+  main.go:27		0x1002473b0		f2a001e0		MOVK $(15<<16), R0
+  main.go:27		0x1002473b4		97fa189b		CALL math/rand/v2.IntN(SB)
+  main.go:27		0x1002473b8		f9402be1		MOVD 80(RSP), R1
+  main.go:27		0x1002473bc		f9403fe2		MOVD 120(RSP), R2
+  main.go:27		0x1002473c0		f8217840		MOVD R0, (R2)(R1<<3)
+  main.go:26		0x1002473c4		91000421		ADD $1, R1, R1
+  sort.go:165		0x1002473c8		aa0203e0		MOVD R2, R0
+  main.go:26		0x1002473cc		d285a003		MOVD $11520, R3
+  main.go:26		0x1002473d0		f2a02623		MOVK $(305<<16), R3
+  main.go:26		0x1002473d4		eb03003f		CMP R3, R1
+  main.go:26		0x1002473d8		54fffe8b		BLT -12(PC)
+  main.go:31		0x1002473dc		d503201f		NOOP
+  sort.go:165		0x1002473e0		d285a001		MOVD $11520, R1
+  sort.go:165		0x1002473e4		f2a02621		MOVK $(305<<16), R1
+  sort.go:165		0x1002473e8		aa0103e2		MOVD R1, R2
+  sort.go:165		0x1002473ec		97fba541		CALL sort.intsImpl(SB)
+  main.go:35		0x1002473f0		f9403fe0		MOVD 120(RSP), R0
+  main.go:35		0x1002473f4		aa1f03e1		MOVD ZR, R1
+  main.go:35		0x1002473f8		aa1f03e2		MOVD ZR, R2
+  main.go:35		0x1002473fc		14000003		JMP 3(PC)
+  main.go:35		0x100247400		91000421		ADD $1, R1, R1
+  main.go:15		0x100247404		aa0403e2		MOVD R4, R2
+  main.go:35		0x100247408		d285a003		MOVD $11520, R3
+  main.go:35		0x10024740c		f2a02623		MOVK $(305<<16), R3
+  main.go:35		0x100247410		eb03003f		CMP R3, R1
+  main.go:35		0x100247414		540003aa		BGE 29(PC)
+  main.go:35		0x100247418		f8617804		MOVD (R0)(R1<<3), R4
+  main.go:36		0x10024741c		d29ae165		MOVD $55051, R5
+  main.go:36		0x100247420		f2ae1465		MOVK $(28835<<16), R5
+  main.go:36		0x100247424		f2c147a5		MOVK $(2621<<32), R5
+  main.go:36		0x100247428		f2f47ae5		MOVK $(41943<<48), R5
+  main.go:36		0x10024742c		9b417ca6		SMULH R1, R5, R6
+  main.go:36		0x100247430		8b060026		ADD R6, R1, R6
+  main.go:36		0x100247434		9346fcc6		ASR $6, R6, R6
+  main.go:36		0x100247438		d2800c87		MOVD $100, R7
+  main.go:36		0x10024743c		9b0784c6		MSUB R7, R1, R6, R6
+  main.go:37		0x100247440		d29df3c7		MOVD $61342, R7
+  main.go:37		0x100247444		f2b8d4e7		MOVK $(50855<<16), R7
+  main.go:37		0x100247448		f2c6e967		MOVK $(14155<<32), R7
+  main.go:37		0x10024744c		f2e83127		MOVK $(16777<<48), R7
+  main.go:37		0x100247450		9b417ce8		SMULH R1, R7, R8
+  main.go:37		0x100247454		9348fd08		ASR $8, R8, R8
+  main.go:37		0x100247458		d2807d09		MOVD $1000, R9
+  main.go:37		0x10024745c		9b087d28		MUL R8, R9, R8
+  main.go:36		0x100247460		9b060884		MADD R6, R2, R4, R4
+  main.go:37		0x100247464		eb08003f		CMP R8, R1
+  main.go:37		0x100247468		54fffcc1		BNE -26(PC)
+  main.go:38		0x10024746c		cb0403e6		NEG R4, R6
+  main.go:38		0x100247470		8b0414c6		ADD R4<<5, R6, R6
+  main.go:38		0x100247474		937ffcc8		ASR $63, R6, R8
+  main.go:38		0x100247478		8b4880c8		ADD R8>>32, R6, R8
+  main.go:38		0x10024747c		92607d08		AND $-4294967296, R8, R8
+  main.go:38		0x100247480		cb0800c4		SUB R8, R6, R4
+  main.go:38		0x100247484		17ffffdf		JMP -33(PC)
+  main.go:15		0x100247488		f90027e2		MOVD R2, 72(RSP)
+  main.go:16		0x10024748c		f94037e0		MOVD 104(RSP), R0
+  main.go:16		0x100247490		f94033e1		MOVD 96(RSP), R1
+  main.go:16		0x100247494		f94043e2		MOVD 128(RSP), R2
+  main.go:16		0x100247498		97f9a07e		CALL time.Since(SB)
+  main.go:16		0x10024749c		f9002fe0		MOVD R0, 88(RSP)
+  main.go:18		0x1002474a0		f94057e1		MOVD 168(RSP), R1
+  main.go:18		0x1002474a4		b4000101		CBZ R1, 8(PC)
+  main.go:18		0x1002474a8		f9400422		MOVD 8(R1), R2
+  main.go:18		0x1002474ac		d00015e3		ADRP 2875392(PC), R3
+  main.go:18		0x1002474b0		91298063		ADD $2656, R3, R3
+  main.go:18		0x1002474b4		c8dffc64		LDAR (R3), R4
+  main.go:18		0x1002474b8		b9401025		MOVWU 16(R1), R5
+  main.go:18		0x1002474bc		f9400086		MOVD (R4), R6
+  main.go:18		0x1002474c0		1400003d		JMP 61(PC)
+  main.go:18		0x1002474c4		f9003be1		MOVD R1, 112(RSP)
+  main.go:18		0x1002474c8		a908ffff		STP (ZR, ZR), 136(RSP)
+  main.go:18		0x1002474cc		f94027e0		MOVD 72(RSP), R0
+  main.go:18		0x1002474d0		97f88b14		CALL runtime.convT64(SB)
+  main.go:18		0x1002474d4		90000541		ADRP 688128(PC), R1
+  main.go:18		0x1002474d8		91010021		ADD $64, R1, R1
+  main.go:18		0x1002474dc		f90047e1		MOVD R1, 136(RSP)
+  main.go:18		0x1002474e0		f9004be0		MOVD R0, 144(RSP)
+  main.go:18		0x1002474e4		f9403be0		MOVD 112(RSP), R0
+  main.go:18		0x1002474e8		f9405be1		MOVD 176(RSP), R1
+  main.go:18		0x1002474ec		d0000002		ADRP 8192(PC), R2
+  main.go:18		0x1002474f0		91109042		ADD $1060, R2, R2
+  main.go:18		0x1002474f4		d2800163		MOVD $11, R3
+  main.go:18		0x1002474f8		910223e4		ADD $136, RSP, R4
+  main.go:18		0x1002474fc		b24003e5		ORR $1, ZR, R5
+  main.go:18		0x100247500		aa0503e6		MOVD R5, R6
+  main.go:18		0x100247504		97f9f007		CALL fmt.Fprintf(SB)
+  main.go:19		0x100247508		f94057e0		MOVD 168(RSP), R0
+  main.go:19		0x10024750c		b4000100		CBZ R0, 8(PC)
+  main.go:19		0x100247510		f9400401		MOVD 8(R0), R1
+  main.go:19		0x100247514		d00015e2		ADRP 2875392(PC), R2
+  main.go:19		0x100247518		912a0042		ADD $2688, R2, R2
+  main.go:19		0x10024751c		c8dffc43		LDAR (R2), R3
+  main.go:19		0x100247520		b9401004		MOVWU 16(R0), R4
+  main.go:19		0x100247524		f9400065		MOVD (R3), R5
+  main.go:19		0x100247528		14000015		JMP 21(PC)
+  main.go:19		0x10024752c		f9003be0		MOVD R0, 112(RSP)
+  main.go:19		0x100247530		a908ffff		STP (ZR, ZR), 136(RSP)
+  main.go:19		0x100247534		f9402fe0		MOVD 88(RSP), R0
+  main.go:19		0x100247538		97f88afa		CALL runtime.convT64(SB)
+  main.go:19		0x10024753c		b0000761		ADRP 970752(PC), R1
+  main.go:19		0x100247540		912b0021		ADD $2752, R1, R1
+  main.go:19		0x100247544		f90047e1		MOVD R1, 136(RSP)
+  main.go:19		0x100247548		f9004be0		MOVD R0, 144(RSP)
+  main.go:19		0x10024754c		f9403be0		MOVD 112(RSP), R0
+  main.go:19		0x100247550		f9405be1		MOVD 176(RSP), R1
+  main.go:19		0x100247554		d0000002		ADRP 8192(PC), R2
+  main.go:19		0x100247558		91392442		ADD $3657, R2, R2
+  main.go:19		0x10024755c		d28001a3		MOVD $13, R3
+  main.go:19		0x100247560		910223e4		ADD $136, RSP, R4
+  main.go:19		0x100247564		b24003e5		ORR $1, ZR, R5
+  main.go:19		0x100247568		aa0503e6		MOVD R5, R6
+  main.go:19		0x10024756c		97f9efed		CALL fmt.Fprintf(SB)
+  main.go:20		0x100247570		a97ffbfd		LDP -8(RSP), (R29, R30)
+  main.go:20		0x100247574		910283ff		ADD $160, RSP, RSP
+  main.go:20		0x100247578		d65f03c0		RET
+  main.go:19		0x10024757c		8a050086		AND R5, R4, R6
+  main.go:19		0x100247580		d37cecc6		LSL $4, R6, R6
+  main.go:19		0x100247584		910020c6		ADD $8, R6, R6
+  main.go:19		0x100247588		f8666867		MOVD (R3)(R6), R7
+  main.go:19		0x10024758c		8b060066		ADD R6, R3, R6
+  main.go:19		0x100247590		eb0100ff		CMP R1, R7
+  main.go:19		0x100247594		540000c0		BEQ 6(PC)
+  main.go:19		0x100247598		91000484		ADD $1, R4, R4
+  main.go:19		0x10024759c		b5ffff07		CBNZ R7, -8(PC)
+  main.go:19		0x1002475a0		aa0203e0		MOVD R2, R0
+  main.go:19		0x1002475a4		97f70a67		CALL runtime.typeAssert(SB)
+  main.go:19		0x1002475a8		17ffffe1		JMP -31(PC)
+  main.go:19		0x1002475ac		f94004c0		MOVD 8(R6), R0
+  main.go:19		0x1002475b0		17ffffdf		JMP -33(PC)
+  main.go:18		0x1002475b4		8a0600a7		AND R6, R5, R7
+  main.go:18		0x1002475b8		d37cece7		LSL $4, R7, R7
+  main.go:18		0x1002475bc		910020e7		ADD $8, R7, R7
+  main.go:18		0x1002475c0		f8676888		MOVD (R4)(R7), R8
+  main.go:18		0x1002475c4		8b070087		ADD R7, R4, R7
+  main.go:18		0x1002475c8		eb02011f		CMP R2, R8
+  main.go:18		0x1002475cc		54000100		BEQ 8(PC)
+  main.go:18		0x1002475d0		910004a5		ADD $1, R5, R5
+  main.go:18		0x1002475d4		b5ffff08		CBNZ R8, -8(PC)
+  main.go:18		0x1002475d8		aa0303e0		MOVD R3, R0
+  main.go:18		0x1002475dc		aa0203e1		MOVD R2, R1
+  main.go:18		0x1002475e0		97f70a58		CALL runtime.typeAssert(SB)
+  main.go:18		0x1002475e4		aa0003e1		MOVD R0, R1
+  main.go:18		0x1002475e8		17ffffb7		JMP -73(PC)
+  main.go:18		0x1002475ec		f94004e2		MOVD 8(R7), R2
+  main.go:18		0x1002475f0		aa0203e1		MOVD R2, R1
+  main.go:18		0x1002475f4		17ffffb4		JMP -76(PC)
+  main.go:13		0x1002475f8		f90007e0		MOVD R0, 8(RSP)
+  main.go:13		0x1002475fc		f9000be1		MOVD R1, 16(RSP)
+  main.go:13		0x100247600		f9000fe2		MOVD R2, 24(RSP)
+  main.go:13		0x100247604		aa1e03e3		MOVD R30, R3
+  main.go:13		0x100247608		97f8b95a		CALL runtime.morestack_noctxt.abi0(SB)
+  main.go:13		0x10024760c		f94007e0		MOVD 8(RSP), R0
+  main.go:13		0x100247610		f9400be1		MOVD 16(RSP), R1
+  main.go:13		0x100247614		f9400fe2		MOVD 24(RSP), R2
+  main.go:13		0x100247618		17ffff4e		JMP main.taskHandler(SB)
+  main.go:13		0x10024761c		00000000		?
+```
+
+In line **#16** in **main-without-pgo** version, it's calling the <InlineCode>computeHeavyTask</InlineCode> function but in **main-with-pgo** version, the function is inlined.
+
+The <InlineCode>MOVD $11520, R1</InlineCode> instruction moves a 64-bit value <InlineCode>11520</InlineCode> (which is <InlineCode>0x2D00</InlineCode> in hexadecimal) into register R1. Note that a 64-bit value is represented by a 16-digit hexadecimal value (each hexadecimal digit represents 4 bits).
+
+The <InlineCode>MOVK $(305\<\<16), R1</InlineCode> instruction moves the 16-bit immediate value <InlineCode>305</InlineCode> (which is <InlineCode>0x0131</InlineCode> in hexadecimal) into the upper half (bits 16-31) of register R1 by shifting <InlineCode>305</InlineCode> left by 16 bits, while keeping the lower half (bits 0-15) unchanged. The resulting value in register R1 is <InlineCode>0x0000000001312D00</InlineCode>, which is <InlineCode>20,000,000</InlineCode> in decimal. This is the first line of the <InlineCode>computeHeavyTask</InlineCode> function.
+
+## Applying to real-world projects
+
+I've used the same approach to try applying PGO to my crypto trading bot project. It has gained **a 5% performance improvement**. The profile is collected not during the peak time so the performance improvement will be improved further if I collect more profiles at different times.
+
+<Image
+  alt="Result of running go tool pprof -diff_base"
+  src="/hughdo.dev/content/blog/optimize-go-applications-with-pgo/diff-base-result.png"
+  width={2628}
+  height={1168}
+/>
+
+## Conclusion
+
+IMO, trying to optimize the code manually is still the best way to make sure an application gets the best performance. Addtionally, a pprof profile can easily become stale or incorrect if the code changes frequently so managing it efficiently is also a challenge. However, PGO is still a good technique to have in your toolbox. It can be used to quickly get a performance improvement without much effort. It's also a good way to learn how the Go compiler works.
