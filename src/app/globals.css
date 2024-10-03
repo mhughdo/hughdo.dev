@@ -247,6 +247,10 @@ pre::-webkit-scrollbar {
   display: none;
 }
 
+pre[data-ch="true"] {
+  @apply bg-gray-100 dark:bg-gray-800 !important;
+}
+
 pre {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */

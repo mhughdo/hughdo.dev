@@ -24,6 +24,7 @@
     "blurhash": "^2.0.5",
     "bright": "^0.8.5",
     "clsx": "^2.1.1",
+    "codehike": "^1.0.1",
     "drizzle-orm": "^0.33.0",
     "exif-parser": "^0.1.12",
     "framer-motion": "^11.5.4",

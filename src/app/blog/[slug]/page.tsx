@@ -63,7 +63,7 @@ const robotoMono = localFont({
   variable: '--font-roboto-mono',
 })
 
-const Page = ({ params }: { params: { slug: string } }) => {
+const Page = async ({ params }: { params: { slug: string } }) => {
   const { slug } = params
   const post = getPost(slug)
   if (!post) {

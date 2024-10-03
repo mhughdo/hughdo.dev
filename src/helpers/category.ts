@@ -6,6 +6,10 @@ export const CATEGORIES = [
     slug: 'general',
   },
   {
+    name: 'Go',
+    slug: 'go',
+  },
+  {
     name: 'React',
     slug: 'react',
   },
@@ -28,9 +32,5 @@ export const CATEGORIES = [
   {
     name: 'TypeScript',
     slug: 'typescript',
-  },
-  {
-    name: 'JavaScript',
-    slug: 'javascript',
   },
 ] as const satisfies Category[]

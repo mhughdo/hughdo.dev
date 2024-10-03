@@ -11,6 +11,7 @@ import LazyMotion from '@/components/LazyMotion'
 import { getTheme } from '@/utils/getTheme'
 
 import './globals.css'
+import '../components/MDXComponents/Theme/GithubFromCSS.css'
 
 const uncutSans = localFont({
   src: '../fonts/UncutSans-Variable.woff2',
