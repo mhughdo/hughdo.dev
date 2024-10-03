@@ -525,11 +525,11 @@ The <InlineCode>MOVK $(305\<\<16), R1</InlineCode> instruction moves the 16-bit 
 
 ## Applying to real-world projects
 
-I've used the same approach to try applying PGO to my crypto trading bot project. It has gained **a 5% performance improvement**. The profile is collected not during the peak time so the performance improvement will be improved further if I collect more profiles at different times.
+I've used the same approach to try applying PGO to my crypto trading bot project. It has gained **a 20% performance improvement** which is quite impressive. The profile is collected not during the peak time so I guess the performance will be improved further if I collect more profiles at different times.
 
 <Image
   alt="Result of running go tool pprof -diff_base"
-  src="/hughdo.dev/content/blog/optimize-go-applications-with-pgo/diff-base-result.png"
+  src="/hughdo.dev/content/blog/optimize-go-applications-with-pgo/diff-result.png"
   width={2628}
   height={1168}
 />
