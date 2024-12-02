@@ -33,4 +33,8 @@ export const CATEGORIES = [
     name: 'TypeScript',
     slug: 'typescript',
   },
+  {
+    name: 'Blockchain',
+    slug: 'blockchain',
+  }
 ] as const satisfies Category[]
