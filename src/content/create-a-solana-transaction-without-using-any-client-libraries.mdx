@@ -1,0 +1,658 @@
+---
+title: Create a Solana transaction without using any client libraries
+seoTitle: Create a Solana transaction without using any client libraries
+description: >-
+  Understanding how a Solana transaction is constructed is very useful for people who are new to Solana or blockchain in general. In this article, we will learn how to create a Solana transaction without using any client libraries.
+isPublished: true
+publishedOn: 2024-12-03T00:00:00.000Z
+categories:
+  - blockchain
+  - go
+meta:
+  keywords:
+    - solana transaction
+    - raw transaction
+    - solana transaction explained
+    - solana blockchain
+    - client libraries
+    - create a solana transaction
+    - solana
+    - golang
+bannerPath: /hughdo.dev/content/blog/create-a-solana-transaction/solana-logo.png
+bannerAlt: Solana logo in a 3d animated style
+updatedOn: "2024-12-03T00:00:00.000Z"
+---
+
+<Image
+  alt="Solana logo in a 3d animated style"
+  src="/hughdo.dev/content/blog/create-a-solana-transaction/solana-logo.png"
+  width={2464}
+  height={1856}
+/>
+
+Understanding how a Solana transaction is constructed is crucial for building Solana applications like trading bots, smart contracts, DeFi applications, etc. It's very useful for people who are new to Solana or blockchain in general. In this article, we will learn how to create a Solana transaction without using any client libraries to gain a deeper understanding of how Solana transactions work.
+
+## Core concepts
+
+Before continuing, I highly recommend reading the official Solana documentation about [Solana Account Model](https://solana.com/docs/core/accounts) and [Transactions and Instructions](https://solana.com/docs/core/transactions). They provide a good foundation for understanding Solana account and transaction models.
+
+I'll quickly go over some concepts here:
+
+### Account
+
+1. The way Solana stores data resembles a [key-value store](https://en.wikipedia.org/wiki/Key%E2%80%93value_database) where each account has a unique address and acts as an entry in the store.
+2. An account can be either a program (smart contract) account or a user (wallet) account.
+3. **Every account has a program "owner"**. Only the program that owns an account can modify its data or deduct its lamport balance. However, anyone can increase the balance.
+4. In a transaction, an account is a **signer** if it's required to sign the transaction. Additionally, an account is **writable** if its data/state can be modified by the transaction.
+
+### Transaction
+
+1. Sending a transaction is the way to interact (sending or receiving SOL, calling programs, etc.) with the Solana blockchain.
+2. A transaction consists of a list of instructions where each instruction represents an operation to be executed. **Each instruction specifies the program to call, the accounts to pass to the program, and the data to send to the program**.
+3. Instructions are executed sequentially and atomically. If any instruction fails, the transaction is rolled back.
+4. The maximum size of a transaction is **1232 bytes**.
+
+You can think of a Solana transaction as when you make an order at a restaurant. The order is a transaction, and each dish is an instruction. Or if you're familiar with web development, a transaction is like a POST request, except you can do multiple POST requests in one transaction.
+
+## Structure Of A Solana Transaction
+
+<Image
+  alt="Structure of a Solana transaction"
+  src="/hughdo.dev/content/blog/create-a-solana-transaction/tx-structure.png"
+  width={8837}
+  height={3822}
+/>
+
+It seems complicated, but don't worry; I'll explain each part. Feel free to skip to the next section if you already understand it.
+
+### Compact-Array Format
+
+It contains 2 parts:
+
+- The length of the array: encoded in a format called [compact-u16](https://github.com/solana-labs/solana/blob/27eff8408b7223bb3c4ab70523f8a8dca3ca6645/sdk/program/src/short_vec.rs#L21-L44).
+- The items in the array: each item is sequentially listed after the encoded length.
+
+### Signatures
+
+An array of signatures of the transaction. Each signature is 64 bytes long. Each signature is the result of signing the transaction (signatures + message) with the private key of the signer using the [Ed25519](https://en.wikipedia.org/wiki/EdDSA) algorithm.
+
+<Callout>
+  You might wonder why there are multiple signatures. There're serveral cases
+  where mutiple signatures are needed, such as multi-signature(multi-sig)
+  wallets, cross-program invocations where different signers are required, etc.
+  However, in most cases, you only need one signature.
+</Callout>
+
+### Message Header
+
+It contains only 3 u8 fields:
+
+1. The number of required signatures for the transaction: This determines how many signer accounts must provide valid signatures for the transaction to be processed.
+2. The number of read-only (non-writable) and signer accounts: These accounts must sign the transaction to approve it, even though their data remains unchanged.
+3. The number of read-only (non-writable) and non-signer accounts: These accounts are included for reference but do not require signatures or modification.
+
+We can programmatically create the message header by iterating through the accounts required by each instruction and counting the number of signer and read-only accounts.
+
+### Compact Array Of Account Addresses
+
+An array containing all the account addresses needed for the instructions within the transaction. Addresses in the array are ordered by the privileges for the accounts:
+
+1. Accounts that are writable and signers
+2. Accounts that are read-only and signers
+3. Accounts that are writable and not signers
+4. Accounts that are read-only and not signers
+
+Just like the message header, we can programmatically create this array using the accounts required by the instructions.
+
+### Compact Array Of Instructions
+
+#### Instruction
+
+Each instruction must include the following information:
+
+1. Program address: Specifies the program being invoked.
+2. Accounts: Lists every account the instruction reads from or writes to, including other programs, using the <InlineCode>AccountMeta</InlineCode> struct.
+3. Instruction Data: A byte array that specifies which [instruction handler](https://solana.com/docs/terminology#instruction-handler) on the program to invoke as there can be multiple handlers in a program, plus any additional data required by the instruction handler (function arguments).
+
+<Callout>
+AccountMeta is a struct that contains the following fields:
+- pubkey: The on-chain address of an account
+- isSigner: A boolean indicating whether the account is a signer
+- isWritable: Specify if the account data will be modified
+
+</Callout>
+
+#### Compiled Instruction
+
+The structure of an instruction is human-readable, but when we serialize it, it needs to be in a different format called CompiledInstruction. It contains a slightly different structure:
+
+1. Program ID Index: This is represented as an u8 index pointing to an account address within the account addresses array.
+2. Compact array of account address indexes: An array of u8 indexes pointing to the account addresses array for each account required by the instruction.
+3. Compact array of opaque u8 data: A u8 byte array specific to the program invoked. This data specifies the instruction to invoke on the program along with any additional data that the instruction requires (such as function arguments).
+
+#### Recent Blockhash
+
+Finally, the final part of the transaction is the recent blockhash. This acts as a timestamp for the transaction and is used to prevent duplications and eliminate stale transactions.
+
+The maximum age of a transaction's blockhash is 150 blocks (~1 minute assuming 400ms block times). If a transaction's blockhash is 150 blocks older than the latest blockhash, it is considered expired and the transaction will be rejected.
+
+## Implementation
+
+Enough theory, let's implement a simple application that sends a small amount of SOL from one account to another. As I mentioned earlier, we won't use any client libraries, only the Solana JSON RPC API.
+
+First, we need to figure out which program to call and what data it expects. In Solana, every "wallet" is owned by a program called [System Program](https://solana.com/docs/core/accounts#system-program). This program provides basic functionalities like creating accounts, transferring SOL, etc. Regarding the data, the instruction handler we want to invoke is <InlineCode>Transfer</InlineCode>, [its index is 2](https://docs.rs/solana-sdk/latest/solana_sdk/system_instruction/enum.SystemInstruction.html). Note that [the type of the index is u32](https://github.com/solana-program/system/blob/5363ad3/clients/js/src/generated/programs/system.ts#L64-L66) so we need to encode <InlineCode>2</InlineCode> as a 32-bit integer in little-endian format.
+
+The [Transfer function](https://docs.rs/solana-sdk/latest/solana_sdk/system_instruction/enum.SystemInstruction.html#variant.Transfer) requires 2 accounts: the sender and the receiver and an 64-bit unsigned integer representing the amount of SOL to transfer. The sender account must be a signer, and both accounts must be writable.
+
+Now, let's define some types based on the structure of a Solana transaction:
+
+```go
+// types.go
+package main
+
+type PublicKey [32]byte
+type Signature [64]byte
+
+type Transaction struct {
+	Signatures []Signature
+	Message    Message
+}
+
+type AccountMeta struct {
+	PubKey     PublicKey
+	IsSigner   bool
+	IsWritable bool
+}
+
+type Instruction struct {
+	ProgramID      PublicKey
+	ProgramIDIndex uint8
+	Accounts       []AccountMeta
+	Data           []byte
+}
+
+type Message struct {
+	Header          MessageHeader
+	AccountKeys     []PublicKey
+	RecentBlockhash PublicKey
+	Instructions    []Instruction
+}
+
+type MessageHeader struct {
+	NumRequiredSignatures       uint8
+	NumReadonlySignedAccounts   uint8
+	NumReadonlyUnsignedAccounts uint8
+}
+```
+
+Next, we're going to create some helper functions:
+
+```go
+// solana.go
+package main
+
+import (
+	"bytes"
+	"crypto"
+	"crypto/ed25519"
+	"crypto/rand"
+	"encoding/binary"
+	"encoding/json"
+	"fmt"
+	"io"
+	"math"
+	"net/http"
+	"sort"
+
+	"github.com/mr-tron/base58"
+)
+
+const (
+	PublicKeyLength = 32
+)
+
+func MustPublicKeyFromBase58(in string) PublicKey {
+	out, err := PublicKeyFromBase58(in)
+	if err != nil {
+		panic(err)
+	}
+	return out
+}
+
+func PublicKeyFromBase58(in string) (out PublicKey, err error) {
+	val, err := base58.Decode(in)
+	if err != nil {
+		return out, fmt.Errorf("failed to decode base58: %w", err)
+	}
+
+	if len(val) != PublicKeyLength {
+		return out, fmt.Errorf("invalid public key length: got %d, want %d", len(val), PublicKeyLength)
+	}
+
+	copy(out[:], val)
+	return
+}
+
+
+// CreateTransferInstruction creates a transfer instruction
+// https://docs.rs/solana-sdk/latest/solana_sdk/system_instruction/enum.SystemInstruction.html#variant.Transfer
+func CreateTransferInstruction(sender, receiver PublicKey, lamports uint64) Instruction {
+	systemProgramID := MustPublicKeyFromBase58("11111111111111111111111111111111")
+
+	senderMeta := AccountMeta{
+		PubKey:     sender,
+		IsSigner:   true,
+		IsWritable: true,
+	}
+	receiverMeta := AccountMeta{
+		PubKey:     receiver,
+		IsSigner:   false,
+		IsWritable: true,
+	}
+
+	// Transfer instruction data
+	// The first part is the instruction handler index, system program uses a 4-byte (u32) index, ref: https://github.com/solana-program/system/blob/5363ad3/clients/js/src/generated/programs/system.ts#L64-L66
+	// The next 8 bytes (u64) are the amount in lamports (little-endian)
+	data := make([]byte, 12)
+	binary.LittleEndian.PutUint32(data[:4], 2)
+	binary.LittleEndian.PutUint64(data[4:], lamports)
+
+	return Instruction{
+		ProgramID: systemProgramID,
+		Accounts:  []AccountMeta{senderMeta, receiverMeta},
+		Data:      data,
+	}
+}
+
+
+func NewTransaction(instructions []Instruction, recentBlockhash [32]byte, feePayer PublicKey) (*Transaction, error) {
+	message := Message{
+		RecentBlockhash: recentBlockhash,
+		Instructions:    instructions,
+	}
+	seen := make(map[PublicKey]struct{})
+	accounts := make([]*AccountMeta, 0)
+	accountKeyIndex := make(map[PublicKey]int)
+	for _, instr := range instructions {
+		for _, acct := range instr.Accounts {
+			if _, ok := seen[acct.PubKey]; !ok {
+				seen[acct.PubKey] = struct{}{}
+				accounts = append(accounts, &acct)
+			}
+		}
+		if _, ok := seen[instr.ProgramID]; !ok {
+			seen[instr.ProgramID] = struct{}{}
+			accounts = append(accounts, &AccountMeta{
+				PubKey:     instr.ProgramID,
+				IsSigner:   false,
+				IsWritable: false,
+			})
+		}
+	}
+
+	// Sort the accounts
+	sort.SliceStable(accounts, func(i, j int) bool {
+		ai := accounts[i]
+		aj := accounts[j]
+		if ai.PubKey == feePayer {
+			return true
+		}
+		if ai.IsSigner != aj.IsSigner {
+			return ai.IsSigner
+		}
+		if ai.IsWritable != aj.IsWritable {
+			return ai.IsWritable
+		}
+
+		return false
+	})
+	message.AccountKeys = make([]PublicKey, len(accounts))
+	for i, acc := range accounts {
+		accountKeyIndex[acc.PubKey] = i
+	}
+	for i, inst := range message.Instructions {
+		// Assign program ID index
+		message.Instructions[i].ProgramIDIndex = uint8(accountKeyIndex[inst.ProgramID])
+	}
+
+	// Initialize message header
+	for i, acc := range accounts {
+		if acc.IsSigner {
+			message.Header.NumRequiredSignatures++
+			if !acc.IsWritable {
+				message.Header.NumReadonlySignedAccounts++
+			}
+		} else {
+			if !acc.IsWritable {
+				message.Header.NumReadonlyUnsignedAccounts++
+			}
+		}
+
+		// Populate account address array
+		message.AccountKeys[i] = acc.PubKey
+	}
+
+	return &Transaction{
+		Message: message,
+	}, nil
+}
+
+// SerializeMessage serializes a message to byte array
+func SerializeMessage(msg Message) ([]byte, error) {
+	buf := new(bytes.Buffer)
+
+	// Serialize message header
+	buf.WriteByte(msg.Header.NumRequiredSignatures)
+	buf.WriteByte(msg.Header.NumReadonlySignedAccounts)
+	buf.WriteByte(msg.Header.NumReadonlyUnsignedAccounts)
+
+	// Serialize account keys with compact-array format
+	// Length as compact-u16
+	err := EncodeCompactU16Length(buf, len(msg.AccountKeys))
+	if err != nil {
+		return nil, fmt.Errorf("failed to encode account keys length: %w", err)
+	}
+	for _, acct := range msg.AccountKeys {
+		buf.Write(acct[:])
+	}
+
+	// Serialize recent blockhash
+	buf.Write(msg.RecentBlockhash[:])
+
+	// Serialize instructions
+    // Each instruction is represented in the CompiledInstruction format
+	// First, number of instructions as compact-u16
+	err = EncodeCompactU16Length(buf, len(msg.Instructions))
+	if err != nil {
+		return nil, fmt.Errorf("failed to encode instructions length: %w", err)
+	}
+	for _, instr := range msg.Instructions {
+		// Program ID index
+		buf.WriteByte(byte(instr.ProgramIDIndex))
+
+		accountIndexes := []uint8{}
+		for _, acct := range instr.Accounts {
+      // Find the index of the account in the account keys array
+			for i, key := range msg.AccountKeys {
+				if key == acct.PubKey {
+					accountIndexes = append(accountIndexes, uint8(i))
+					break
+				}
+			}
+		}
+		// Serialize account indexes with compact-array format
+		err := EncodeCompactU16Length(buf, len(accountIndexes))
+		if err != nil {
+			return nil, fmt.Errorf("failed to encode account indexes length: %w", err)
+		}
+		for _, idx := range accountIndexes {
+			buf.WriteByte(idx)
+		}
+
+		// Serialize instruction data
+		err = EncodeCompactU16Length(buf, len(instr.Data))
+		if err != nil {
+			return nil, fmt.Errorf("failed to encode instruction data length: %w", err)
+		}
+		buf.Write(instr.Data)
+	}
+
+	return buf.Bytes(), nil
+}
+
+// SerializeTransaction serializes a transaction to byte array
+func SerializeTransaction(tx *Transaction, senderPrivateKey ed25519.PrivateKey) ([]byte, error) {
+	serializedMessage, err := SerializeMessage(tx.Message)
+	if err != nil {
+		return nil, fmt.Errorf("failed to serialize message: %w", err)
+	}
+	signature, err := SignTransaction(serializedMessage, senderPrivateKey)
+	if err != nil {
+		return nil, fmt.Errorf("failed to sign transaction: %w", err)
+	}
+	tx.Signatures = append(tx.Signatures, signature)
+	signatureCount := &bytes.Buffer{}
+	// Serialize signature array
+	err = EncodeCompactU16Length(signatureCount, len(tx.Signatures))
+	if err != nil {
+		return nil, fmt.Errorf("failed to encode signature count: %w", err)
+	}
+	serializedTransaction := make([]byte, 0, signatureCount.Len()+signatureCount.Len()*64+len(serializedMessage))
+	serializedTransaction = append(serializedTransaction, signatureCount.Bytes()...)
+	for _, sig := range tx.Signatures {
+		serializedTransaction = append(serializedTransaction, sig[:]...)
+	}
+	serializedTransaction = append(serializedTransaction, serializedMessage...)
+
+	return serializedTransaction, nil
+}
+
+// EncodeCompactU16Length encodes a length as a compact u16
+// https://github.com/solana-labs/solana/blob/2ef2b6daa05a7cff057e9d3ef95134cee3e4045d/web3.js/src/util/shortvec-encoding.ts
+func EncodeCompactU16Length(buf *bytes.Buffer, len int) error {
+	if len < 0 || len > math.MaxUint16 {
+		return fmt.Errorf("length %d out of range", len)
+	}
+	rem_len := len
+	for {
+		elem := uint8(rem_len & 0x7f)
+		rem_len >>= 7
+		if rem_len == 0 {
+			buf.WriteByte(elem)
+			break
+		} else {
+			elem |= 0x80
+			buf.WriteByte(elem)
+		}
+	}
+	return nil
+}
+
+// SignTransaction signs a transaction with a private key using ed25519
+func SignTransaction(serializedTransaction []byte, privateKey ed25519.PrivateKey) (Signature, error) {
+	signature, err := privateKey.Sign(rand.Reader, serializedTransaction, crypto.Hash(0))
+	if err != nil {
+		return Signature{}, fmt.Errorf("failed to sign transaction: %w", err)
+	}
+	var sig Signature
+	copy(sig[:], signature)
+	return sig, nil
+}
+
+type RPCResponse struct {
+	JsonRPC string `json:"jsonrpc"`
+	ID      int    `json:"id"`
+	Result  struct {
+		Context struct {
+			Slot uint64 `json:"slot"`
+		} `json:"context"`
+		Value struct {
+			Blockhash string `json:"blockhash"`
+		} `json:"value"`
+	} `json:"result"`
+	Error *struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	} `json:"error,omitempty"`
+}
+
+// GetLatestBlockhash retrieves the latest blockhash from Solana
+func GetLatestBlockhash(rpcEndpoint string) ([32]byte, error) {
+	requestBody := map[string]interface{}{
+		"id":      1,
+		"jsonrpc": "2.0",
+		"method":  "getLatestBlockhash",
+		"params": []map[string]string{{
+			"commitment": "processed",
+		}},
+	}
+	jsonData, err := json.Marshal(requestBody)
+	if err != nil {
+		return [32]byte{}, fmt.Errorf("failed to marshal request: %v", err)
+	}
+	req, err := http.NewRequest("POST", rpcEndpoint, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return [32]byte{}, fmt.Errorf("failed to create request: %v", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return [32]byte{}, fmt.Errorf("failed to send request: %v", err)
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return [32]byte{}, fmt.Errorf("failed to read response: %v", err)
+	}
+	var rpcResponse RPCResponse
+	if err := json.Unmarshal(body, &rpcResponse); err != nil {
+		return [32]byte{}, fmt.Errorf("failed to parse response: %v", err)
+	}
+	if rpcResponse.Error != nil {
+		return [32]byte{}, fmt.Errorf("RPC error: %d - %s",
+			rpcResponse.Error.Code, rpcResponse.Error.Message)
+	}
+	decoded, err := base58.Decode(rpcResponse.Result.Value.Blockhash)
+	if err != nil {
+		return [32]byte{}, fmt.Errorf("failed to decode blockhash: %v", err)
+	}
+	if len(decoded) != 32 {
+		return [32]byte{}, fmt.Errorf("invalid blockhash length: %d", len(decoded))
+	}
+	var result [32]byte
+	copy(result[:], decoded)
+	return result, nil
+}
+```
+
+A lot things going on here, I'll explain some key functions:
+
+- PublicKeyFromBase58(): Since the string representation of a public key is in base58 format, we need a function to convert it to a 32-byte array.
+- CreateTransferInstruction(): Create a transfer instruction. It will contain the sender and receiver accounts and the amount of SOL to transfer.
+- NewTransaction(): Create a new transaction. It will contain the <InlineCode>Message</InlineCode> part of the transaction. Account addresses are aggregated and sorted by their privileges. The message header is then populated based on the accounts.
+- SerializeMessage(): Serialize a <InlineCode>Message</InlineCode> to a byte array. It will serialize the message header, account keys, recent blockhash, and instructions sequentially.
+- SerializeTransaction(): Serialize a transaction to a byte array. It will serialize <InlineCode>Message</InlineCode>, sign the <InlineCode>Message</InlineCode> with the sender's private key, and append the serialized signature array and message to the final byte array.
+
+Finally, let's create the main function and use the functions we just created:
+
+```go
+// main.go
+package main
+
+import (
+	"encoding/base64"
+	"fmt"
+	"log"
+
+	"github.com/mr-tron/base58"
+	"golang.org/x/crypto/ed25519"
+)
+
+func main() {
+	senderPubKey := MustPublicKeyFromBase58("ENTER_SENDER_PUBKEY_HERE")
+	receiverPubKey := MustPublicKeyFromBase58("ENTER_RECEIVER_PUBKEY_HERE")
+	senderPrivateKeyBytes, err := base58.Decode("ENTER_SENDER_PRIVATE_KEY_HERE")
+	if err != nil {
+		log.Fatalf("Invalid private key provided: %v", err)
+	}
+	if len(senderPrivateKeyBytes) != ed25519.PrivateKeySize {
+		log.Fatalf("Private key must be %d bytes", ed25519.PrivateKeySize)
+	}
+	senderPrivateKey := ed25519.PrivateKey(senderPrivateKeyBytes)
+
+	amountSOL := 0.001
+	lamports := uint64(amountSOL * 1e9) // 1 SOL = 1e9 lamports
+
+	transferInstr := CreateTransferInstruction(senderPubKey, receiverPubKey, lamports)
+	recentBlockhash, err := GetLatestBlockhash("https://api.mainnet-beta.solana.com")
+	if err != nil {
+		log.Fatalf("Failed to get recent blockhash: %v", err)
+	}
+	tx, err := NewTransaction([]Instruction{transferInstr}, recentBlockhash, senderPubKey)
+	if err != nil {
+		log.Fatalf("Failed to create transaction: %v", err)
+	}
+	serializedTx, err := SerializeTransaction(tx, senderPrivateKey)
+
+	fmt.Printf("Base64-encoded transaction: %s\n", base64.StdEncoding.EncodeToString(serializedTx))
+}
+```
+
+Nothing fancy here, it just defines necessary variables, creates a transfer instruction, gets the latest blockhash, creates a transaction, serializes it, and prints the base64-encoded transaction. Remember to replace the placeholders with your own values if you want to run the code.
+
+That's it! We've just created a simple application for transfering SOL between. You can run the code with the following command:
+
+```bash
+go run .
+```
+
+### Library alternative
+
+Don't want to reinvent the wheel or believe that the code above can work properly? Here's the code that uses [Solana Go SDK](https://github.com/gagliardetto/solana-go) to achieve the same result:
+
+```go
+package main
+
+import (
+	"context"
+	"encoding/base64"
+	"fmt"
+
+	"github.com/gagliardetto/solana-go"
+	"github.com/gagliardetto/solana-go/programs/system"
+	"github.com/gagliardetto/solana-go/rpc"
+)
+
+func main() {
+	receiverPubKey := solana.MustPublicKeyFromBase58("ENTER_RECEIVER_PUBKEY_HERE")
+	senderPrivateKey := solana.MustPrivateKeyFromBase58("ENTER_SENDER_PRIVATE_KEY_HERE")
+	signers := []solana.PrivateKey{senderPrivateKey}
+    client := rpc.New("https://api.mainnet-beta.solana.com")
+	res, err := client.GetLatestBlockhash(context.Background(), rpc.CommitmentProcessed)
+    if err != nil {
+      panic(err)
+    }
+    recentBlockhash := res.Value.Blockhash
+
+	amountSOL := 0.001
+	lamports := uint64(amountSOL * 1e9) // 1 SOL = 1e9 lamports
+	tx, err := solana.NewTransaction(
+		[]solana.Instruction{
+			system.NewTransferInstruction(
+				lamports,
+				senderPrivateKey.PublicKey(),
+				receiverPubKey,
+			).Build(),
+		},
+		recentBlockhash,
+		solana.TransactionPayer(senderPrivateKey.PublicKey()),
+	)
+	if err != nil {
+		panic(err)
+	}
+	_, err = tx.Sign(
+		func(key solana.PublicKey) *solana.PrivateKey {
+			for _, payer := range signers {
+				if payer.PublicKey().Equals(key) {
+					return &payer
+				}
+			}
+			return nil
+		},
+	)
+	serializedTx, err := tx.MarshalBinary()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Base64-Encoded Tx from Solana-go: %s\n", base64.StdEncoding.EncodeToString(serializedTx))
+}
+
+```
+
+If you want the exact same result between the two code snippets, you need to hard-code the recent blockhash, as it changes every time you run the code.
+
+### Conclusion
+
+I hope this article has helped you understand the structure of a Solana transaction and how to create one without any SDKs or libraries. IMO, this knowledge is essential for building more complex applications on Solana. In the next article, we'll create an application that swaps tokens on the most popular DEX on Solana, Raydium. Stay tuned!
